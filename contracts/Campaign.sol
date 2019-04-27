@@ -9,6 +9,18 @@ contract Campaign {
   uint public startTime;
   uint public campaignPeriod;
 
+  function elapsedTime () public view returns (uint) {
+    return now - startTime;
+  }
+
+  function remainingTime () public view returns (uint) {
+    return campaignPeriod - elapsedTime();
+  }
+
+  function getNow () public view returns (uint256) {
+    return now;
+  }
+
   mapping (address => bool) public pledgers;
   uint public rebate;
 
