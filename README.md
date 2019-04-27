@@ -45,10 +45,10 @@ Monetizing Creators with Split-the-Bill Crowdsourcing
 
 ## User Experience
 1. A Creator creates a Campaign, specifying the following:
-  - Campaign Description
-  - Target Amount
-  - Minimum number of Pledgers or Maximum Amount per Pledge
-  - Deadline
+    - Campaign Description
+    - Target Amount
+    - Minimum number of Pledgers or Maximum Amount per Pledge
+    - Deadline
 2. A page is created, including the Campaign Details, the current number of Pledgers so far, and a "Pledge" button
 3. The Creator shares the link with all of their followers
 4. People pledge by paying (Target Amount)/(Minimum Pledgers)
