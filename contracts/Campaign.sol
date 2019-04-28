@@ -1,5 +1,47 @@
 pragma solidity ^0.5.0;
 
+/*
+  DESCRIPTION
+    A single Contract to store all Campaigns
+    Each Campaign has their own balance
+    Redeem funds when reached even before deadline
+    Redeem rebate when reached even before deadline (can't split anymore)
+    Use unredeemed rebate to pledge to others (hold a pool for rebates/refunds)
+  
+  Events
+    CreatedCampaign (campaignIndex, recipient, totalAmount, deadline)
+    Pledged (campaign, pledger, currentAmount)
+    RedeemedRefund (campaign, pledger, refund)
+    RedeemedFunds (campaign, recipient, fund)
+    RedeemedRebate (campaign, pledger, rebate)
+    ReachedGoal (campaign, time)
+    DeadlineHasPassed (campaign, amount, hasReached)
+  
+  Store
+    Campaigns
+    PledgeBalance (use unredeemed funds, rebates, and refunds)
+      can calculate balance rather than put in virtual bank
+    
+  Methods
+    createCampaign(target, deadline, maxPledgeAmount) => (uint campaignIndex)
+    pledge(campaignId) => (bool success)
+    redeemFunds(campaignId) => (uint fundAmount)
+    redeemRebate(campaignId) => (uint rebateAmount)
+    redeemRefund(campaignId) => (uint refundAmount)
+
+  QUESTIONS
+    Pledging multiple times?
+    Can a pledger "unPledge"?
+    Can the recipient pledge?
+    Continue to pledge after funds are redeemed?
+    Continue to pledge after deadline has passed?
+  
+  FEATURES
+    Use emitted events as proof of pledging
+    Use funds in contract (refund/rebate/funds) to pledge to others
+    Balances are computed so indefinite campaigns are like dividends
+*/
+
 contract Campaign {
   address public recipient;
 
@@ -110,5 +152,9 @@ contract Campaign {
   function redeemRefund () public pastDeadline campaignUnsuccessful isPledger {
     msg.sender.transfer(maxPledgeAmount);
     pledgers[msg.sender] = false;
+  }
+
+  function redeem () public isRecipient {
+    msg.sender.transfer(address(this).balance);
   }
 }

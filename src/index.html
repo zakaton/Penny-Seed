@@ -1,13 +1,57 @@
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
     <script src="js/app.js"></script>
   </head>
 
   <body>
+      <form>
+        <label>
+          <h1>Campaign #</h1>
+          <input readonly id=campaignAddress>
+        </label>
 
+        <label>
+          <h2>Recipient</h1>
+            <input readonly id=campaignRecipient>
+        </label>
+
+        <label>
+          <h2>Target Amount</h2>
+          <input readonly id=campaignTarget>
+        </label>
+
+        <label>
+          <h2>Start Time</h2>
+          <input readonly id=campaignStart>
+        </label>
+
+        <label>
+          <h2>Period</h2>
+          <input readonly id=campaignPeriod>
+        </label>
+
+        <label>
+          <h2>Deadline</h2>
+          <input readonly id=campaignDeadline>
+        </label>
+
+        <label>
+          <h2>Pledgers</h2>
+          <ol id=campaignPledgers>
+
+          </ol>
+        </label>
+
+        <label>
+          <h2>Current Amount</h2>
+          <input readonly id=campaignCurrentAmount>
+        </label>
+
+        <br>
+        <br>
+        <button id=campaignPledge style="display: none">Pledge</button>
+      </form>
   </body>
 </html>
