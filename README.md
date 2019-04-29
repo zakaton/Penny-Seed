@@ -1,5 +1,5 @@
 # Penny-Seed
-Monetizing Creators with Split-the-Bill Crowdsourcing
+Decentralized Income
 
 ## Table of Contents
 - [The 4 Elements of Content](#the-4-elements-of-content)
