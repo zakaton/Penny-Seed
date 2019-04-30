@@ -15,15 +15,15 @@ _Decentralized Income_
 - [Building a Community](#building-a-community)
 
 ## The 4 Elements of Content
-1. Creation
-2. Distribution
-3. Discovery
-4. Monetization
+🖌️ Creation
+📡 Distribution
+🔎 Discovery
+💰 Monetization
 
 ## Current Monetization Methods
 1. Pay-per-Media
 2. Subscription
-3. advertising
+3. Advertising
 4. Donations
 5. Crowdfunding
 6. Merchandise
