@@ -16,8 +16,11 @@ _Decentralized Income_
 
 ## The 4 Elements of Content
 🖌️ Creation
+
 📡 Distribution
+
 🔎 Discovery
+
 💰 Monetization
 
 ## Current Monetization Methods
