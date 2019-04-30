@@ -10,6 +10,23 @@ App = {
       new Web3.providers.HttpProvider('http://localhost:7545');
     
     web3 = new Web3(web3Provider);
+
+    fetch("PennySeed.json")
+      .then(response => response.json())
+      .then(pennySeed => {
+        App.contracts.pennySeed = TruffleContract(pennySeed);
+        App.contracts.pennySeed.setProvider(web3Provider);
+
+        App.contracts.pennySeed.deployed()
+          .then(pennySeedInstance => {
+            window.pennySeedInstance = pennySeedInstance;
+
+            ethereum.enable()
+              .then(() => {
+                // do stuff
+              })
+          })
+      })
     
     fetch("Campaign.json")
       .then(response => response.json())
@@ -77,7 +94,7 @@ App = {
                 campaignPledgers.innerHTML += "<li>" + event.args._pledger + "</li>"
                 
                 web3.eth.getBalance(campaignInstance.address, (error, balance) => {
-                  campaignCurrentAmount.value = "Balance: " + balance.toString() + " wei";
+                  campaignCurrentAmount.value = balance.toString();
                 });
 
               });    
