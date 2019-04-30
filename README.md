@@ -1,7 +1,7 @@
-# Penny-Seed
-Decentralized Income
+# Penny Seed
+_Decentralized Income_
 
-## Table of Contents
+## 📚 Table of Contents
 - [The 4 Elements of Content](#the-4-elements-of-content)
 - [Current Monetization Methods](#current-monetization-methods)
 - [Problems](#problems)
