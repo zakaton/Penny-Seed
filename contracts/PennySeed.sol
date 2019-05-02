@@ -180,7 +180,6 @@ contract PennySeed {
     }
     function pledgeToCampaign (uint _campaignIndex) public payable isNotBeneficiary(_campaignIndex) deadlineHasNotPassed(_campaignIndex) hasNotPledged(_campaignIndex) {
         require(msg.value == campaigns[_campaignIndex].pledgeAmount, "Insuficient funds to Pledge");
-        address(this).transfer(campaigns[_campaignIndex].pledgeAmount);
 
         campaigns[_campaignIndex].pledgers[msg.sender] = Pledger(false, false);
         campaigns[_campaignIndex].balance += campaigns[_campaignIndex].pledgeAmount;
@@ -202,6 +201,8 @@ contract PennySeed {
                 campaigns[_campaignIndex].numberOfPledgers
             );  
         }
+
+        address(this).transfer(campaigns[_campaignIndex].pledgeAmount);
     }
 
     function approveRetroactivePledge(uint _campaignIndex) public isBeneficiary(_campaignIndex) {
@@ -218,8 +219,6 @@ contract PennySeed {
     }
     
     function claimFunds (uint _campaignIndex) public goalHasBeenReached(_campaignIndex) isBeneficiary(_campaignIndex) hasNotClaimed(_campaignIndex) {
-        // transfer (goal*0.99) to sender, and (goal*0.01) to ownder for a "cut"
-        msg.sender.transfer(campaigns[_campaignIndex].goal);
         campaigns[_campaignIndex].hasClaimed = true;
 
         emit ClaimedFundsEvent (
@@ -228,21 +227,24 @@ contract PennySeed {
             campaigns[_campaignIndex].goal,
             campaigns[_campaignIndex].balance
         );
+
+        // transfer (goal*0.99) to sender, and (goal*0.01) to ownder for a "cut"
+        msg.sender.transfer(campaigns[_campaignIndex].goal);
     }
     function redeemRebate (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
         uint256 rebate = (campaigns[_campaignIndex].balance / campaigns[_campaignIndex].goal) / campaigns[_campaignIndex].numberOfPledgers;
-        msg.sender.transfer(rebate);
-
-        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
 
         emit RedeemedRebateEvent (
             _campaignIndex,
             msg.sender,
             rebate
         );
+
+        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
+        
+        msg.sender.transfer(rebate);
     }
     function redeemRefund (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasNotBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
-        msg.sender.transfer(campaigns[_campaignIndex].pledgeAmount);
         campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
 
         emit RedeemedRefundEvent (
@@ -250,6 +252,8 @@ contract PennySeed {
             msg.sender,
             campaigns[_campaignIndex].pledgeAmount
         );
+
+        msg.sender.transfer(campaigns[_campaignIndex].pledgeAmount);
     }
 
     // Helpers
