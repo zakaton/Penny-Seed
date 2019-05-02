@@ -1,19 +1,4 @@
-class PennySeedContract {
-    static parseCampaign(values) {
-        return ["beneficiary",
-            "goal",
-            "balance",
-            "startTime",
-            "campaignPeriod",
-            "hasClaimed",
-            "pledgeAmount",
-            "pledgeCount"
-        ].reduce((campaignDescription, key, index) => {
-            campaignDescription[key] = values[index].toString();
-            return campaignDescription;
-        }, {});
-    }
-
+class PennySeed {
     deployed() {
         this.web3Provider = (typeof window.web3 !== "undefined") ?
             window.web3.currentProvider :
@@ -23,51 +8,63 @@ class PennySeedContract {
         return fetch("PennySeed.json")
             .then(response => response.json())
             .then(contractJSON => {
-                const contract = TruffleContract(contractJSON);
-                contract.setProvider(this.web3Provider);
+                this.contract = TruffleContract(contractJSON);
+                this.contract.setProvider(this.web3Provider);
 
-                return contract.deployed()
+                return this.contract.deployed()
                     .then(instance => {
-                        this.instance = instance;
+                        this.contract.instance = instance;
                         return window.ethereum.enable();
                     });
             });
-    }
-
-    getCampaign(campaignIndex) {
-        return this.instance.campaigns(campaignIndex)
-            .then(values => {
-                return new Promise((resolve, reject) => {
-                    resolve(this.constructor.parseCampaign(values))
-                });
-            });
-    }
-    createCampaign(targetAmount, pledgeAmount, period) {
-
     }
 }
 
 class PennySeedElement extends HTMLElement {
     constructor() {
         super();
-        this.contract = new PennySeedContract();
+        this.pennySeed = new PennySeed();
 
         window.addEventListener("load", event => {
-            this.contract.deployed()
+            this.deployed()
                 .then(() => {
                     console.log(this, "has loaded");
                 });
         });
     }
 
+    deployed() {
+        return this.pennySeed.deployed();
+    }
+
     static get observedAttributes() {
         return [
-
+            "type",
+            "campaign-index",
         ];
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        switch(name) {
+    attributeChangedCallback(attribute, oldValue, newValue) {
+        switch(attribute) {
+            case "type":
+                switch(newValue) {
+                    case "create":
+                        // display a "create a campaign" form
+                        break;
+                    case "pledge":
+                        // display a "pledge to campaign" form
+                        break;
+                    default:
+                        // display nothing (use to just inteface with the contract)
+                        break;
+                }
+                break;
+            case "campaign-index":
+                // check if the index is valid
+                // check if the campaign has completed or not
+                // check if the user is the beneficiary
+                // check if the user has pledged or not
+                break;
             default:
                 break;
         }
@@ -160,7 +157,7 @@ if(false) {
                                             fromBlock : 0,
                                             toBlock : "latest",
 
-                                            _campaignId : event.args._campaignId,
+                                            campaignIndex : event.args.campaignIndex,
                                         }).get((error, events) => {
                                             console.log(eventIndex, events);
                                         });
@@ -171,7 +168,7 @@ if(false) {
                                             fromBlock : 0,
                                             toBlock : "latest",
 
-                                            _campaignId : event.args._campaignId,
+                                            campaignIndex : event.args.campaignIndex,
                                         }).get((error, events) => {
                                             console.log("reached goal", events);
                                         });

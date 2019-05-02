@@ -1,10 +1,16 @@
 pragma solidity ^0.5.0;
 
+/*
+    TODO
+        Percentage for "owner"
+        Retroactive pledges through conventional payment systems
+*/
+
 contract PennySeed {
 
     // Events
     event CreatedCampaignEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         address indexed _beneficiary,
         uint256 _goal,
         uint256 _balance,
@@ -13,39 +19,39 @@ contract PennySeed {
         uint256 _pledgeAmount
     );
     event PledgedToCampaignEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         address indexed _pledger,
         uint256 _pledgeAmount,
         uint256 _balance,
-        uint _pledgeCount
+        uint _numberOfPledgers
     );
 
     event ReachedGoalEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         uint256 _goal,
         uint256 _balance,
-        uint _pledgeCount
+        uint _numberOfPledgers
     );
 
     event ClaimedFundsEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         address indexed _beneficiary,
         uint256 _goal,
         uint256 _balance
     );
     event RedeemedRebateEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         address indexed _pledger,
         uint256 _rebateAmount
     );
     event RedeemedRefundEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         address  indexed _pledger,
         uint256 _refundAmount
     );
 
     event DeadlineHasPassedEvent (
-        uint indexed _campaignId,
+        uint indexed _campaignIndex,
         bool _hasReachedGoal,
         uint256 _goal,
         uint256 _balance
@@ -71,12 +77,14 @@ contract PennySeed {
         bool hasClaimed;
 
         uint256 pledgeAmount;
-        uint pledgeCount;
+        uint numberOfPledgers;
         mapping (address => Pledger) pledgers;
     }
 
     mapping (uint => Campaign) public campaigns;
-    uint public campaignsCount;
+    uint public numberOfCampaigns;
+
+    // uint public ownersCut; // ([000...] => [111...]) => (0% => 100%)
 
     constructor () public {
         owner = msg.sender;
@@ -88,63 +96,63 @@ contract PennySeed {
         _;
     }
 
-    modifier isBeneficiary (uint _campaignId) {
-        require(msg.sender == campaigns[_campaignId].beneficiary, "called by non-beneficiary");
+    modifier isBeneficiary (uint _campaignIndex) {
+        require(msg.sender == campaigns[_campaignIndex].beneficiary, "called by non-beneficiary");
         _;
     }
-    modifier isNotBeneficiary (uint _campaignId) {
-        require(msg.sender != campaigns[_campaignId].beneficiary, "called by beneficiary");
-        _;
-    }
-
-    modifier hasPledged (uint _campaignId) {
-        require(campaigns[_campaignId].pledgers[msg.sender].hasPledged, "has not pledged");
-        _;
-    }
-    modifier hasNotPledged (uint _campaignId) {
-        require(!campaigns[_campaignId].pledgers[msg.sender].hasPledged, "has pledged");
+    modifier isNotBeneficiary (uint _campaignIndex) {
+        require(msg.sender != campaigns[_campaignIndex].beneficiary, "called by beneficiary");
         _;
     }
 
-    modifier deadlineHasPassed (uint _campaignId) {
-        require(now > (campaigns[_campaignId].startTime + campaigns[_campaignId].campaignPeriod), "deadline has not passed");
+    modifier hasPledged (uint _campaignIndex) {
+        require(campaigns[_campaignIndex].pledgers[msg.sender].hasPledged, "has not pledged");
         _;
     }
-    modifier deadlineHasNotPassed (uint _campaignId) {
-        require(now <= (campaigns[_campaignId].startTime + campaigns[_campaignId].campaignPeriod), "deadline has passed");
-        _;
-    }
-
-    modifier goalHasBeenReached (uint _campaignId) {
-        require(campaigns[_campaignId].balance >= campaigns[_campaignId].goal, "goal has not been reached");
-        _;
-    }
-    modifier goalHasNotBeenReached (uint _campaignId) {
-        require(campaigns[_campaignId].balance < campaigns[_campaignId].goal, "goal has been reached");
+    modifier hasNotPledged (uint _campaignIndex) {
+        require(!campaigns[_campaignIndex].pledgers[msg.sender].hasPledged, "has pledged");
         _;
     }
 
-    modifier hasRedeemed (uint _campaignId) {
-        require(campaigns[_campaignId].pledgers[msg.sender].hasRedeemed);
+    modifier deadlineHasPassed (uint _campaignIndex) {
+        require(now > (campaigns[_campaignIndex].startTime + campaigns[_campaignIndex].campaignPeriod), "deadline has not passed");
         _;
     }
-    modifier hasNotRedeemed (uint _campaignId) {
-        require(!campaigns[_campaignId].pledgers[msg.sender].hasRedeemed);
+    modifier deadlineHasNotPassed (uint _campaignIndex) {
+        require(now <= (campaigns[_campaignIndex].startTime + campaigns[_campaignIndex].campaignPeriod), "deadline has passed");
         _;
     }
 
-    modifier hasClaimed (uint _campaignId) {
-        require(campaigns[_campaignId].hasClaimed);
+    modifier goalHasBeenReached (uint _campaignIndex) {
+        require(campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal, "goal has not been reached");
         _;
     }
-    modifier hasNotClaimed (uint _campaignId) {
-        require(!campaigns[_campaignId].hasClaimed);
+    modifier goalHasNotBeenReached (uint _campaignIndex) {
+        require(campaigns[_campaignIndex].balance < campaigns[_campaignIndex].goal, "goal has been reached");
+        _;
+    }
+
+    modifier hasRedeemed (uint _campaignIndex) {
+        require(campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed);
+        _;
+    }
+    modifier hasNotRedeemed (uint _campaignIndex) {
+        require(!campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed);
+        _;
+    }
+
+    modifier hasClaimed (uint _campaignIndex) {
+        require(campaigns[_campaignIndex].hasClaimed);
+        _;
+    }
+    modifier hasNotClaimed (uint _campaignIndex) {
+        require(!campaigns[_campaignIndex].hasClaimed);
         _;
     }
 
     // Methods
     function createCampaign (uint256 _goal, uint256 _pledgeAmount, uint256 _campaignPeriod) public {
-        campaigns[campaignsCount] = Campaign (
+        campaigns[numberOfCampaigns] = Campaign (
             msg.sender,
 
             _goal,
@@ -160,7 +168,7 @@ contract PennySeed {
         );
 
         emit CreatedCampaignEvent (
-            campaignsCount,
+            numberOfCampaigns,
             msg.sender,
             _goal, 0,
             now,
@@ -168,76 +176,81 @@ contract PennySeed {
             _pledgeAmount
         );
 
-        campaignsCount++;
+        numberOfCampaigns++;
     }
-    function pledgeToCampaign (uint _campaignId) public payable isNotBeneficiary(_campaignId) deadlineHasNotPassed(_campaignId) hasNotPledged(_campaignId) {
-        require(msg.value == campaigns[_campaignId].pledgeAmount, "Insuficient funds to Pledge");
-        address(this).transfer(campaigns[_campaignId].pledgeAmount);
+    function pledgeToCampaign (uint _campaignIndex) public payable isNotBeneficiary(_campaignIndex) deadlineHasNotPassed(_campaignIndex) hasNotPledged(_campaignIndex) {
+        require(msg.value == campaigns[_campaignIndex].pledgeAmount, "Insuficient funds to Pledge");
+        address(this).transfer(campaigns[_campaignIndex].pledgeAmount);
 
-        campaigns[_campaignId].pledgers[msg.sender] = Pledger(false, false);
-        campaigns[_campaignId].balance += campaigns[_campaignId].pledgeAmount;
-        campaigns[_campaignId].pledgeCount++;
+        campaigns[_campaignIndex].pledgers[msg.sender] = Pledger(false, false);
+        campaigns[_campaignIndex].balance += campaigns[_campaignIndex].pledgeAmount;
+        campaigns[_campaignIndex].numberOfPledgers++;
 
         emit PledgedToCampaignEvent (
-            _campaignId,
+            _campaignIndex,
             msg.sender,
-            campaigns[_campaignId].pledgeAmount,
-            campaigns[_campaignId].balance,
-            campaigns[_campaignId].pledgeCount
+            campaigns[_campaignIndex].pledgeAmount,
+            campaigns[_campaignIndex].balance,
+            campaigns[_campaignIndex].numberOfPledgers
         );
 
-        if(campaigns[_campaignId].balance >= campaigns[_campaignId].goal) {
+        if(campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal) {
             emit ReachedGoalEvent (
-                _campaignId,
-                campaigns[_campaignId].goal,
-                campaigns[_campaignId].balance,
-                campaigns[_campaignId].pledgeCount
+                _campaignIndex,
+                campaigns[_campaignIndex].goal,
+                campaigns[_campaignIndex].balance,
+                campaigns[_campaignIndex].numberOfPledgers
             );  
         }
     }
 
-    function pollForDeadline (uint _campaignId) public deadlineHasPassed(_campaignId) {
+    function approveRetroactivePledge(uint _campaignIndex) public isBeneficiary(_campaignIndex) {
+        // FILL
+    }
+
+    function pollForDeadline (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) {
         emit DeadlineHasPassedEvent (
-            _campaignId,
-            (campaigns[_campaignId].balance >= campaigns[_campaignId].goal),
-            campaigns[_campaignId].goal,
-            campaigns[_campaignId].balance
+            _campaignIndex,
+            (campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal),
+            campaigns[_campaignIndex].goal,
+            campaigns[_campaignIndex].balance
         );
     }
     
-    function claimFunds (uint _campaignId) public goalHasBeenReached(_campaignId) isBeneficiary(_campaignId) hasNotClaimed(_campaignId) {
-        msg.sender.transfer(campaigns[_campaignId].goal);
-        campaigns[_campaignId].hasClaimed = true;
+    function claimFunds (uint _campaignIndex) public goalHasBeenReached(_campaignIndex) isBeneficiary(_campaignIndex) hasNotClaimed(_campaignIndex) {
+        // transfer (goal*0.99) to sender, and (goal*0.01) to ownder for a "cut"
+        msg.sender.transfer(campaigns[_campaignIndex].goal);
+        campaigns[_campaignIndex].hasClaimed = true;
 
         emit ClaimedFundsEvent (
-            _campaignId,
+            _campaignIndex,
             msg.sender,
-            campaigns[_campaignId].goal,
-            campaigns[_campaignId].balance
+            campaigns[_campaignIndex].goal,
+            campaigns[_campaignIndex].balance
         );
     }
-    function redeemRebate (uint _campaignId) public deadlineHasPassed(_campaignId) goalHasBeenReached(_campaignId) hasPledged(_campaignId) {
-        uint256 rebate = (campaigns[_campaignId].balance / campaigns[_campaignId].goal) / campaigns[_campaignId].pledgeCount;
+    function redeemRebate (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
+        uint256 rebate = (campaigns[_campaignIndex].balance / campaigns[_campaignIndex].goal) / campaigns[_campaignIndex].numberOfPledgers;
         msg.sender.transfer(rebate);
 
-        campaigns[_campaignId].pledgers[msg.sender].hasRedeemed = true;
+        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
 
         emit RedeemedRebateEvent (
-            _campaignId,
+            _campaignIndex,
             msg.sender,
             rebate
         );
     }
-    function redeemRefund (uint _campaignId) public deadlineHasPassed(_campaignId) goalHasNotBeenReached(_campaignId) hasPledged(_campaignId) {
-        msg.sender.transfer(campaigns[_campaignId].pledgeAmount);
-        campaigns[_campaignId].pledgers[msg.sender].hasRedeemed = true;
+    function redeemRefund (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasNotBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
+        msg.sender.transfer(campaigns[_campaignIndex].pledgeAmount);
+        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
 
         emit RedeemedRefundEvent (
-            _campaignId,
+            _campaignIndex,
             msg.sender,
-            campaigns[_campaignId].pledgeAmount
+            campaigns[_campaignIndex].pledgeAmount
         );
-    }    
+    }
 
     // Helpers
     function () external payable {}
