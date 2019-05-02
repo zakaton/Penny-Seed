@@ -59,6 +59,7 @@ contract PennySeed {
 
     // Globals
     address public owner;
+    bool reEntrancyMutex = false;
 
     struct Pledger {
         bool hasPledged;
@@ -91,6 +92,11 @@ contract PennySeed {
     }
 
     // Modifers
+    modifier noReEntry {
+        require(!reEntrancyMutex);
+        _;
+    }
+
     modifier onlyOwner {
         require(msg.sender == owner);
         _;
@@ -218,7 +224,7 @@ contract PennySeed {
         );
     }
     
-    function claimFunds (uint _campaignIndex) public goalHasBeenReached(_campaignIndex) isBeneficiary(_campaignIndex) hasNotClaimed(_campaignIndex) {
+    function claimFunds (uint _campaignIndex) public goalHasBeenReached(_campaignIndex) isBeneficiary(_campaignIndex) hasNotClaimed(_campaignIndex) noReEntry {
         campaigns[_campaignIndex].hasClaimed = true;
 
         emit ClaimedFundsEvent (
@@ -228,8 +234,10 @@ contract PennySeed {
             campaigns[_campaignIndex].balance
         );
 
-        // transfer (goal*0.99) to sender, and (goal*0.01) to ownder for a "cut"
-        msg.sender.transfer(campaigns[_campaignIndex].goal);
+        reEntrancyMutex = true;
+            // transfer (goal*0.99) to sender, and (goal*0.01) to ownder for a "cut"
+            msg.sender.transfer(campaigns[_campaignIndex].goal);
+        reEntrancyMutex = false;
     }
     function redeemRebate (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
         uint256 rebate = (campaigns[_campaignIndex].balance / campaigns[_campaignIndex].goal) / campaigns[_campaignIndex].numberOfPledgers;
