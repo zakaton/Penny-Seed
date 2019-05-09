@@ -4,6 +4,10 @@ pragma solidity ^0.5.0;
     TODO
         Percentage for "owner"
         Retroactive pledges through conventional payment systems
+
+    SECURITY VULNERABILITIES
+        Validating Retroactive Pledges from external sources (PayPal, Stripe, Patreon...)
+        Over/Underflow values
 */
 
 contract PennySeed {
@@ -67,6 +71,8 @@ contract PennySeed {
     }
 
     struct Campaign {
+        // add an "index" property?
+
         address payable beneficiary;
 
         uint256 goal;
@@ -79,6 +85,10 @@ contract PennySeed {
 
         uint256 pledgeAmount;
         uint numberOfPledgers;
+        uint256 redeemAmount;
+
+        bool goalHasBeenReached;
+
         mapping (address => Pledger) pledgers;
     }
 
@@ -130,11 +140,11 @@ contract PennySeed {
     }
 
     modifier goalHasBeenReached (uint _campaignIndex) {
-        require(campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal, "goal has not been reached");
+        require(campaigns[_campaignIndex].goalHasBeenReached, "goal has not been reached");
         _;
     }
     modifier goalHasNotBeenReached (uint _campaignIndex) {
-        require(campaigns[_campaignIndex].balance < campaigns[_campaignIndex].goal, "goal has been reached");
+        require(!campaigns[_campaignIndex].goalHasBeenReached, "goal has been reached");
         _;
     }
 
@@ -170,7 +180,9 @@ contract PennySeed {
             false,
 
             _pledgeAmount,
-            0
+            0,
+            0,
+            false
         );
 
         emit CreatedCampaignEvent (
@@ -187,7 +199,7 @@ contract PennySeed {
     function pledgeToCampaign (uint _campaignIndex) public payable isNotBeneficiary(_campaignIndex) deadlineHasNotPassed(_campaignIndex) hasNotPledged(_campaignIndex) {
         require(msg.value == campaigns[_campaignIndex].pledgeAmount, "Insuficient funds to Pledge");
 
-        campaigns[_campaignIndex].pledgers[msg.sender] = Pledger(false, false);
+        campaigns[_campaignIndex].pledgers[msg.sender] = Pledger(true, false);
         campaigns[_campaignIndex].balance += campaigns[_campaignIndex].pledgeAmount;
         campaigns[_campaignIndex].numberOfPledgers++;
 
@@ -199,13 +211,14 @@ contract PennySeed {
             campaigns[_campaignIndex].numberOfPledgers
         );
 
-        if(campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal) {
+        if(!campaigns[_campaignIndex].goalHasBeenReached && campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal) {
+            campaigns[_campaignIndex].goalHasBeenReached = true;
             emit ReachedGoalEvent (
                 _campaignIndex,
                 campaigns[_campaignIndex].goal,
                 campaigns[_campaignIndex].balance,
                 campaigns[_campaignIndex].numberOfPledgers
-            );  
+            );
         }
 
         address(this).transfer(campaigns[_campaignIndex].pledgeAmount);
@@ -215,17 +228,26 @@ contract PennySeed {
         // FILL
     }
 
-    function pollForDeadline (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) {
-        emit DeadlineHasPassedEvent (
-            _campaignIndex,
-            (campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal),
-            campaigns[_campaignIndex].goal,
-            campaigns[_campaignIndex].balance
-        );
+    function pollForDeadline (uint _campaignIndex) public {
+        if(now > (campaigns[_campaignIndex].startTime + campaigns[_campaignIndex].campaignPeriod)) {
+            bool hasReachedGoal = (campaigns[_campaignIndex].balance >= campaigns[_campaignIndex].goal);
+            
+            emit DeadlineHasPassedEvent (
+                _campaignIndex,
+                hasReachedGoal,
+                campaigns[_campaignIndex].goal,
+                campaigns[_campaignIndex].balance
+            );
+
+            campaigns[_campaignIndex].redeemAmount = hasReachedGoal?
+                (((campaigns[_campaignIndex].numberOfPledgers * campaigns[_campaignIndex].pledgeAmount) - campaigns[_campaignIndex].goal) / campaigns[_campaignIndex].numberOfPledgers):
+                campaigns[_campaignIndex].pledgeAmount;
+        }
     }
     
     function claimFunds (uint _campaignIndex) public goalHasBeenReached(_campaignIndex) isBeneficiary(_campaignIndex) hasNotClaimed(_campaignIndex) noReEntry {
         campaigns[_campaignIndex].hasClaimed = true;
+        campaigns[_campaignIndex].balance -= campaigns[_campaignIndex].goal;
 
         emit ClaimedFundsEvent (
             _campaignIndex,
@@ -240,28 +262,28 @@ contract PennySeed {
         reEntrancyMutex = false;
     }
     function redeemRebate (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
-        uint256 rebate = (campaigns[_campaignIndex].balance / campaigns[_campaignIndex].goal) / campaigns[_campaignIndex].numberOfPledgers;
-
+        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
+        campaigns[_campaignIndex].balance -= campaigns[_campaignIndex].redeemAmount;
+        
         emit RedeemedRebateEvent (
             _campaignIndex,
             msg.sender,
-            rebate
+            campaigns[_campaignIndex].redeemAmount
         );
-
-        campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
         
-        msg.sender.transfer(rebate);
+        msg.sender.transfer(campaigns[_campaignIndex].redeemAmount);
     }
     function redeemRefund (uint _campaignIndex) public deadlineHasPassed(_campaignIndex) goalHasNotBeenReached(_campaignIndex) hasPledged(_campaignIndex) {
         campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
+        campaigns[_campaignIndex].balance -= campaigns[_campaignIndex].pledgeAmount;
 
         emit RedeemedRefundEvent (
             _campaignIndex,
             msg.sender,
-            campaigns[_campaignIndex].pledgeAmount
+            campaigns[_campaignIndex].redeemAmount
         );
 
-        msg.sender.transfer(campaigns[_campaignIndex].pledgeAmount);
+        msg.sender.transfer(campaigns[_campaignIndex].redeemAmount);
     }
 
     // Helpers
