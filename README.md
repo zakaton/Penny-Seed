@@ -172,3 +172,4 @@ _There are 3 levels developers can extend PennySeed's functionality at:_
 ## Building a Community
 - Sponsoring Events by using PennySeed to fund the Events, including PennySeed Extension Hackathons
 - Provide a way for existing pledges from external sources to act as retroactive pledges
+- Provide a way for non-crypto people to pay "the normal way" via PayPal or Stripe or whatever, but without the "rebate" feature (as an incentive to use a crypto wallet like [MetaMask](https://metamask.io/))
