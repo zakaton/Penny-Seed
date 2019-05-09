@@ -3,33 +3,77 @@ _Decentralized Income_
 
 ## 📚 Table of Contents
 - [The 4 Elements of Content](#the-4-elements-of-content)
-- [Current Monetization Methods](#current-monetization-methods)
+- [Monetization Today](#monetization-today)
 - [Problems](#problems)
 - [Insight](#insight)
 - [Solution](#solution)
+- [Implementation](#implementation)
 - [User Experience](#user-experience)
+- [Developer Experience](#developer-experience)
 - [Benefits](#benefits)
 - [Use Cases](#use-cases)
-- [Implementation](#implementation)
-- [Profit Model](#profit-model)
+- [Revenue Model](#revenue-model)
 - [Building a Community](#building-a-community)
 
 ## The 4 Elements of Content
 🖌️ Creation
 
-📡 Distribution
+🗄️ Hosting
 
 🔎 Discovery
 
 💰 Monetization
 
-## Current Monetization Methods
-1. Pay-per-Media
-2. Subscription
-3. Advertising
-4. Donations
-5. Crowdfunding
-6. Merchandise
+
+## Monetization Today
+1. Pay-per-Media  
+✔️ Money comes from Users  
+❌ Hard to Share and reach more people  
+❌ Price is arbitrary due to no overhead  
+❌ Worry about Piracy and Torrenting  
+
+2. Subscription  
+✔️ Users pay a regular fixed amount  
+✔️ Users can access all content  
+❌ Users still pay even if no new content is created  
+❌ Users have to subscribe for a period just to watch a single piece of content, cancelling after  
+
+3. Streaming  
+✔️ Users pay a regular fixed amount  
+✔️ User payment is distributed amongst creators based on content they stream  
+❌ Payment system is arbitrary (pay per stream)  
+❌ Incentivizes Creators to get fans to play more of their content  
+❌ Users have to subscribe to an entire Network even when they just watch 1 or 2 creators' content  
+
+4. Advertising  
+✔️ Content can be free  
+✔️ Can Share and reach more people  
+❌ Incentivizes Creators to generate clickbait content  
+❌ Money comes from sponsors, not viewers  
+❌ Creators are beholden to sponsors, compromising content  
+
+5. Donations  
+✔️ Money comes from Users  
+✔️ Content can be Free  
+✔️ Quality over Quantity, since more content doesn't mean more donations  
+❌ Users aren't sure how much to pay (nor how much the Creator needs/has)  
+❌ Unstable income due to irregular donations  
+❌ Users can be emotionally manipulated into donating  
+
+6. Crowdfunding  
+✔️ Money comes from Users  
+✔️ There's a clear goal for users to reach  
+✔️ Content can be Free  
+❌ Once passed the goal, anything extra could've gone to other Creators they supported  
+❌ Winner-takes-all approach where few popular Creators get the bulk of the potential pledges  
+❌ Irregular pledge amounts lead to pandering to large pledgers who contribute most of the funding  
+
+7. Merchandise  
+✔️ Money comes from Users  
+✔️ Free advertising from wearers  
+❌ Users who want to support the Creator may not want that particular product  
+❌ Creators are incentivized to sell cheap products for high prices for greater profits  
+❌ Manufacturing & Shipping Fees  
 
 ## Problems
 - Processing Fees
@@ -45,6 +89,11 @@ _Decentralized Income_
 - A "Split-the-Bill" Model that divides the Target Amount by the number of Pledgers
 - A Minimal Design that doesn't try to be a Social Network
 - An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications
+
+## Implementation
+- Cryptocurrency for minimal processing fees
+- Blockchain ledger for Proof-of-Pledge
+- Smart Contracts for Third-Party Extensions
 
 ## User Experience
 1. A Creator creates a Campaign, specifying the following:
@@ -65,10 +114,16 @@ Otherwise, if the Minimum Number of Pledgers isn't met:
 
 5. Pledgers are refunded the full Pledge Amount
 
+## Developer Experience
+_There are 3 levels developers can extend PennySeed's functionality at:_
+1. Custom Element - Web Developers can insert a `<penny-seed></penny-seed>` element that developers can set attributes of.  
+2. Web3 - Web Developers can access the deployed contract using the Web API.  
+3. Solidity Developers - Solidity Developers can upgrade the contract.  
+
 ## Benefits
-- Creator is guarenteed the Exact Amount they specify
+- Creators are guarenteed the Exact Amount they specify
 - Pledgers are incentivized to share the Campaign to reduce their Pledge Share
-- Minimal Design allows for a wide range of applications
+- Minimal Design allows for a wide range of emergent applications and extensions
 
 ## Use Cases
 - Artists
@@ -109,16 +164,12 @@ Otherwise, if the Minimum Number of Pledgers isn't met:
   - A Recurring Campaign can forward a percent of Compaigns to past Campaign Pledgers, acing as a dividend
   - Product Startups can treat Pledges as Preorders, setting a Maximum number of Pledges for a fixed set of products
 
-## Implementation
-- Cryptocurrency for minimal processing fees
-- Blockchain ledger for Proof-of-Pledge
-- Smart Contracts for Third-Party Extensions
-
-## Profit Model
+## Revenue Model
 - PennySeed will have a recurring Campaign with a dividend extension for "investors"
 - All Campaigns pay a percent to a PennySeed fund
-- Profits will come primarily from the former to the latter (and vice-versa for dividends)
+- Revenue will come primarily from the former for initial funding, but as more campaigns are created revenue will come from the latter (a percentage of which will go back to the "investors")
 
 ## Building a Community
 - Sponsoring Events by using PennySeed to fund the Events, including PennySeed Extension Hackathons
 - Provide a way for existing pledges from external sources to act as retroactive pledges
+- Provide a way for non-crypto people to pay "the normal way" via PayPal or Stripe or whatever, but without the "rebate" feature (as an incentive to use a crypto wallet like [MetaMask](https://metamask.io/))
