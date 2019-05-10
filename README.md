@@ -76,9 +76,9 @@ _Decentralized Income_
 ❌ Manufacturing & Shipping Fees  
 
 ## Problems
-- Processing Fees
-- Arbitrary Pricing with no guarantee of a stable income
-- Not extendable for custom incentive structures
+❌ Processing Fees  
+❌ Arbitrary Pricing with no guarantee of a stable income  
+❌ Not extendable for custom incentive structures  
 
 ## Insight
 - The Creator wants everyone to enjoy it
@@ -86,9 +86,9 @@ _Decentralized Income_
 - Fans aren't paying for Content - they're paying for Future Content
 
 ## Solution
-- A "Split-the-Bill" Model that divides the Target Amount by the number of Pledgers
-- A Minimal Design that doesn't try to be a Social Network
-- An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications
+✔️ A "Split-the-Bill" Model that divides the Target Amount by the number of Pledgers  
+✔️ A Minimal Design that doesn't try to be a Social Network  
+✔️ An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications  
 
 ## Implementation
 - Cryptocurrency for minimal processing fees
@@ -115,15 +115,15 @@ Otherwise, if the Minimum Number of Pledgers isn't met:
 5. Pledgers are refunded the full Pledge Amount
 
 ## Developer Experience
-_There are 3 levels developers can extend PennySeed's functionality at:_
-1. Custom Element - Web Developers can insert a `<penny-seed></penny-seed>` element that developers can set attributes of.  
-2. Web3 - Web Developers can access the deployed contract using the Web API.  
-3. Solidity Developers - Solidity Developers can upgrade the contract.  
+_There are 3 levels developers can interface with PennySeed:_
+1. Accessing the `<penny-seed></penny-seed>` element for contract eventListeners and rendering basic campaign information
+2. Using the Web3 API to interact with the contract instance from the web-end
+3. Upgrading the Solidity Contract itself
 
 ## Benefits
-- Creators are guarenteed the Exact Amount they specify
-- Pledgers are incentivized to share the Campaign to reduce their Pledge Share
-- Minimal Design allows for a wide range of emergent applications and extensions
+👍 Creators are guarenteed the Exact Amount they specify  
+👍 Pledgers are incentivized to share the Campaign to reduce their Pledge Share  
+👍 Minimal Design allows for a wide range of emergent applications and extensions  
 
 ## Use Cases
 - Artists
