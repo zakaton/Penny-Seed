@@ -1,5 +1,5 @@
 # Penny Seed
-_Decentralized Income_
+_Decentralized Income ([demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs))_
 
 ## 📚 Table of Contents
 - [The 4 Elements of Content](#the-4-elements-of-content)
