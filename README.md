@@ -1,7 +1,7 @@
 <a href="https://webcomicname.com/" target="_blank">![Webcomic Name](images/oh-no.png)</a>
 
 # Penny Seed
-_Decentralized Income ([watch a demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs))_
+_Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs), [Stripe Demo](https://www.youtube.com/watch?v=vl86RafZ8X8))_
 
 ## 📚 Table of Contents
 - [The 4 Elements of Content](#the-4-elements-of-content)
