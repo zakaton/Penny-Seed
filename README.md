@@ -82,9 +82,9 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 ✔️ An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications  
 
 ## Implementation
-- Cryptocurrency for minimal processing fees
-- Blockchain ledger for Proof-of-Pledge
-- Stripe fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)
+- Ethereum via [Solidity](https://solidity.readthedocs.io/en/v0.5.10/) for [minimal processing fees](https://bitinfocharts.com/comparison/ethereum-transactionfees.html)
+- Blockchain ledger via [Web3](https://web3js.readthedocs.io/en/1.0/) for Proof-of-Pledge
+- [Stripe](https://stripe.com/docs) fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)
 
 ## User Experience
 1. A Creator creates a Campaign, specifying the following:
