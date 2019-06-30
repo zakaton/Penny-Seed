@@ -107,9 +107,9 @@ Otherwise, if the Minimum Number of Pledgers isn't met:
 
 ## Developer Experience
 _There are 3 levels developers can interface with PennySeed:_
-1. Accessing the `<penny-seed></penny-seed>` element for contract eventListeners and rendering basic campaign information
-2. Using the Web3 API to interact with the contract instance from the web-end
-3. Upgrading the Solidity Contract itself
+1. Accessing the `<penny-seed></penny-seed>` [Web Component](https://www.webcomponents.org/) for a simple interface with the smart contract, using eventListeners and attributes.
+2. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) from the front-end to allow pledging and query campaign information
+3. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) from the [back-end](https://www.npmjs.com/package/web3) to add custom behavior to your campaign
 
 ## Benefits
 👍 Creators are guarenteed the Exact Amount they specify  
