@@ -4,19 +4,19 @@
 _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs), [Stripe Demo](https://www.youtube.com/watch?v=vl86RafZ8X8))_
 
 ## 📚 Table of Contents
-- [Monetization Today](#monetization-today)
-- [Problems](#problems)
-- [Insight](#insight)
-- [Solution](#solution)
-- [Implementation](#implementation)
-- [User Experience](#user-experience)
-- [Developer Experience](#developer-experience)
-- [Benefits](#benefits)
-- [Use Cases](#use-cases)
-- [Revenue Model](#revenue-model)
-- [Building a Community](#building-a-community)
+[💰 Monetization Today](#-monetization-today)  
+[😔 Problems](#-problems)  
+[💡 Insight](#-insight)  
+[🤩 Solution](#-solution)  
+[🔧 Implementation](#-implementation)  
+[📱 User Experience](#-user-experience)  
+[👩‍💻 Developer Experience](#-developer-experience)  
+[👍 Benefits](#-benefits)  
+[🤔 Use Cases](#-use-cases)  
+[📈 Revenue Model](#-revenue-model)  
+[🌎 Building a Community](#-building-a-community)  
 
-## Monetization Today
+## 💰 Monetization Today
 1. Pay-per-Media  
 ✔️ Money comes from Users  
 ❌ Hard to Share and reach more people  
@@ -66,27 +66,27 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 ❌ Creators are incentivized to sell cheap products for high prices for greater profits  
 ❌ Manufacturing & Shipping Fees  
 
-## Problems
+## 😔 Problems
 ❌ Processing Fees  
 ❌ Arbitrary Pricing with no guarantee of a stable income  
 ❌ Not extendable for custom incentive structures  
 
-## Insight
+## 💡 Insight
 - The Creator wants everyone to enjoy it
 - Most of the money goes to living expenses
 - Fans aren't paying for Content - they're paying for Future Content
 
-## Solution
+## 🤩 Solution
 ✔️ A "Split-the-Bill" Model that divides the Target Amount by the number of Pledgers  
 ✔️ A Minimal Design that doesn't try to be a Social Network  
 ✔️ An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications  
 
-## Implementation
-- Ethereum via [Solidity](https://solidity.readthedocs.io/en/v0.5.10/) for [minimal processing fees](https://bitinfocharts.com/comparison/ethereum-transactionfees.html)
-- Blockchain ledger via [Web3](https://web3js.readthedocs.io/en/1.0/) for Proof-of-Pledge
-- [Stripe](https://stripe.com/docs) fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)
+## 🔧 Implementation
+⚙️ Ethereum via [Solidity](https://solidity.readthedocs.io/en/v0.5.10/) for [minimal processing fees](https://bitinfocharts.com/comparison/ethereum-transactionfees.html)  
+⚙️ Blockchain ledger via [Web3](https://web3js.readthedocs.io/en/1.0/) for Proof-of-Pledge  
+⚙️ [Stripe](https://stripe.com/docs) fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)  
 
-## User Experience
+## 📱 User Experience
 1. A Creator creates a Campaign, specifying the following:
     - Campaign Description
     - Target Amount
@@ -105,62 +105,63 @@ Otherwise, if the Minimum Number of Pledgers isn't met:
 
 5. Pledgers are refunded the full Pledge Amount
 
-## Developer Experience
+## 👩‍💻 Developer Experience
 _There are 3 levels developers can interface with PennySeed:_
 1. Accessing the `<penny-seed></penny-seed>` [Web Component](https://www.webcomponents.org/) for a simple interface with the smart contract, using eventListeners and attributes.
-2. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) from the front-end to allow pledging and query campaign information
-3. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) from the [back-end](https://www.npmjs.com/package/web3) to add custom behavior to your campaign
+2. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) on the front-end to allow pledging and query campaign information
+3. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) on the [back-end](https://www.npmjs.com/package/web3) to add custom behavior to your campaign
 
-## Benefits
-👍 Creators are guarenteed the Exact Amount they specify  
-👍 Pledgers are incentivized to share the Campaign to reduce their Pledge Share  
-👍 Minimal Design allows for a wide range of emergent applications and extensions  
+## 👍 Benefits
+✔️ Creators are guarenteed the Exact Amount they specify  
+✔️ Pledgers are incentivized to share the Campaign to reduce their Pledge Share  
+✔️ Minimal Design allows for a wide range of emergent applications and extensions  
 
-## Use Cases
-- Artists
-  - Artists can use the base model to maintain a stable income
-  - Content can be made free to the public, making it easier to gain more and more followers
-  - Pledgers can access "bonus content" using their pledger id
-  - Earlier pledgers can receive a "dividend" as later campaigns pay a percentage back, crowdsourcing "Content Curators" as people look for new artists to support early
-  - Different "Pledge Types" can be defined, allowing some pledgers to license the Artist's content. If the Pledger is also a PennySeed user, they can forward a percentage of their Campaigns to the Original Artist's Campaign
 
-- Events
-  - A Campaign can be made to cover all costs of the Event (venue, catering, staff)
-  - People can attend by Pledging, using their pledger id as a ticket
-  - The more "tickets" are sold, the lower the ticket price, incentivizing pledgers to get others to attend
-  - Different types of "tickets" can be defined, from selling individual days for multi-day events
-  - A "Maximum Pledgers" can be specified to ensure not "too many" people attend
-  - A "Minimum Pledger Age" can be specified if alcohol is involved
+## 🤔 Use Cases
+### 👩‍🎨 Artists  
+- Artists can use the base model to maintain a stable income  
+- Content can be made free to the public, making it easier to gain more and more followers  
+- Pledgers can access "bonus content" using their pledger id  
+- Earlier pledgers can receive a "dividend" as later campaigns pay a percentage back, crowdsourcing "Content Curators" as people look for new artists to support early  
+- Different "Pledge Types" can be defined, allowing some pledgers to license the Artist's content. If the Pledger is also a PennySeed user, they can forward a percentage of their Campaigns to the Original Artist's Campaign  
 
-- API Developers
-  - Like Artists, API developers can use the base model for a standard income
-  - Pledgers can use their pledge id as an API Access Key to use the API
-  - The Pledge Amount can be based on API usage
+### 🎫 Events  
+- A Campaign can be made to cover all costs of the Event (venue, catering, staff)  
+- People can attend by Pledging, using their pledger id as a ticket  
+- The more "tickets" are sold, the lower the ticket price, incentivizing pledgers to get others to attend  
+- Different types of "tickets" can be defined, from selling individual days for multi-day events  
+- A "Maximum Pledgers" can be specified to ensure not "too many" people attend  
+- A "Minimum Pledger Age" can be specified if alcohol is involved  
 
-- IoT Devices
-  - A Campaign can be made to cover the cost of the device (e.g. a Coffee Machine shared by a Coworking Space
-  - People use the IoT device by pledging, using the pledger id to access the device
-  - The Pledge Amount can be based on usage (pledge multiple times for multiple uses) or a single pledge for "full access"
-  - The Campaign can be set to be the day before its return policy, allowing the Campaigner to return the IoT device when the Campaign isn't met
+### 👩‍💻 API Developers  
+- Like Artists, API developers can use the base model for a standard income
+- Pledgers can use their pledge id as an API Access Key to use the API
+- The Pledge Amount can be based on API usage
 
-- Coworking Spaces
-  - A Recurring Campaign can be made to cover the total cost of running the Space (Rent, Utilities, Staff, Insurance, Maintenance)
-  - Pledgers can use their pledge id to access the CoWorking Space, encouraging more people to join to lower costs
-  - Pledge costs can vary based on attendance or usage of provided IoT equipment
-  - Events can be hosted in the Space, whose venue costs are coupled to the rent costs
-  - Startups and Unemployeed attendees can pledge indirectly with future earnings
+### 📠 IoT Devices  
+- A Campaign can be made to cover the cost of the device (e.g. a Coffee Machine shared by a Coworking Space  
+- People use the IoT device by pledging, using the pledger id to access the device  
+- The Pledge Amount can be based on usage (pledge multiple times for multiple uses) or a single pledge for "full access"  
+- The Campaign can be set to be the day before its return policy, allowing the Campaigner to return the IoT device when the Campaign isn't met  
 
-- Startup Funding
-  - Pledges can act as "shares"
-  - A Recurring Campaign can forward a percent of Compaigns to past Campaign Pledgers, acing as a dividend
-  - Product Startups can treat Pledges as Preorders, setting a Maximum number of Pledges for a fixed set of products
+### 🏢 Coworking Spaces  
+- A Recurring Campaign can be made to cover the total cost of running the Space (Rent, Utilities, Staff, Insurance, Maintenance)  
+- Pledgers can use their pledge id to access the CoWorking Space, encouraging more people to join to lower costs  
+- Pledge costs can vary based on attendance or usage of provided IoT equipment  
+- Events can be hosted in the Space, whose venue costs are coupled to the rent costs  
+- Startups and Unemployeed attendees can pledge indirectly with future earnings  
 
-## Revenue Model
-- PennySeed will have a recurring Campaign with a dividend extension for "investors"
-- All Campaigns pay a percent to a PennySeed fund
-- Revenue will come primarily from the former for initial funding, but as more campaigns are created revenue will come from the latter (a percentage of which will go back to the "investors")
+### 👩‍💼 Startup Funding  
+- Pledges can act as "shares"  
+- A Recurring Campaign can forward a percent of Compaigns to past Campaign Pledgers, acing as a dividend  
+- Product Startups can treat Pledges as Preorders, setting a Maximum number of Pledges for a fixed set of products  
 
-## Building a Community
-- Sponsoring Events by using PennySeed to fund the Events, including PennySeed Extension Hackathons
-- Provide a way for existing pledges from external sources to act as retroactive pledges
-- Provide a conventional payment method via Stripe, adding the [Stripe processing fee](https://stripe.com/pricing) (2.9% + $0.30 per pledge) on the pledger's end as an incentive to use a crypto wallet like [MetaMask](https://metamask.io/)
+## 📈 Revenue Model
+  - PennySeed will have a recurring Campaign with a dividend extension for "investors"
+  - All Campaigns pay a percent to a PennySeed fund
+  - Revenue will come primarily from the former for initial funding, but as more campaigns are created revenue will come from the latter (a percentage of which will go back to the "investors")
+
+## 🌎 Building a Community
+  - Sponsoring Events by using PennySeed to fund the Events, including PennySeed Extension Hackathons
+  - Provide a way for existing pledges from external sources to act as retroactive pledges
+  - Provide a conventional payment method via Stripe, adding the [Stripe processing fee](https://stripe.com/pricing) (2.9% + $0.30 per pledge) on the pledger's end as an incentive to use a crypto wallet like [MetaMask](https://metamask.io/)
