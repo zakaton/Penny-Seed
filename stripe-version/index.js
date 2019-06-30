@@ -1,12 +1,7 @@
-/*
-    TODO
-        Pledge
-            Setup PaymentIntent
-        Create Campaign
-            paymentIntent
-*/
+const dotenv = require("dotenv");
+dotenv.config();
 
-const client_secret = "sk_test_2noapczHHyZkNiwsucAAYwaG00dexdmPhF";
+const client_secret = process.env.STRIPE_SECRET_KEY;
 
 const express = require("express");
 const bodyParser = require("body-parser");
