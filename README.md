@@ -84,7 +84,7 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 ## Implementation
 - Cryptocurrency for minimal processing fees
 - Blockchain ledger for Proof-of-Pledge
-- Smart Contracts for Third-Party Extensions
+- Stripe fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)
 
 ## User Experience
 1. A Creator creates a Campaign, specifying the following:
