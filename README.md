@@ -32,17 +32,18 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 
 3. Streaming  
 ✔️ Users pay a regular fixed amount  
-✔️ User payment is distributed amongst creators based on content they stream  
-❌ Payment system is arbitrary (pay per stream)  
-❌ Incentivizes Creators to get fans to play more of their content  
-❌ Users have to subscribe to an entire Network even when they just watch 1 or 2 creators' content  
+✔️ User payment is distributed amongst creators based on streamed content  
+❌ [Pay-per-Stream](http://www.streamingroyaltycalculator.com/) model can be [exploited](https://www.rollingstone.com/music/music-features/fake-streams-indie-labels-spotify-tidal-846641/)  
+❌ Rewards replayability over quality  
+❌ Incentivizes Creators to exploit fans to stream their content multiple times for [cheap prizes](https://get.renaissance.app/)  
+❌ Users have to subscribe to an entire Network even when they just wanna watch 1 or 2 creators' content  
 
 4. Advertising  
 ✔️ Content can be free  
 ✔️ Can Share and reach more people  
 ❌ Incentivizes Creators to generate clickbait content  
 ❌ Money comes from sponsors, not viewers  
-❌ Creators are beholden to sponsors, compromising content  
+❌ [Creators are beholden to sponsors](https://youtube.fandom.com/wiki/YouTube_Adpocalypse), compromising content  
 
 5. Donations  
 ✔️ Money comes from Users  
@@ -68,7 +69,7 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 ❌ Manufacturing & Shipping Fees  
 
 ## 😔 Problems
-❌ Processing Fees  
+❌ [Processing Fees](https://stripe.com/pricing) (e.g. [Stripe](https://stripe.com/) charges 2.9% + $0.30 per payment)  
 ❌ Arbitrary Pricing with no guarantee of a stable income  
 ❌ Not extendable for custom incentive structures  
 
