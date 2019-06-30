@@ -1,0 +1,62 @@
+<html>
+    <head></head>
+
+    <body>
+        <form id=form method="POST" action="./">
+            Amount: $<input id=amountInput type="number" name="amount" value=1 min=1>
+            <br>
+            Max Pledge Amount: $<input id=maxPledgeInput type="number" step=1 name="maxPledge" value=1 min=1>
+            <br>
+            Minimum Pledgers: <input id=minimumPledgersInput type="number" value=1 min=1>
+            <br>
+            Deadline: <input id=deadlineInput type="datetime-local" name="deadline">
+            <br>
+            <input id=stripeUserIdInput type="hidden" name="stripe_user_id">
+            <br>
+            <button id=submitButton disabled type="submit">Create Campaign</button>
+        </form>
+
+        <script>
+            amountInput.addEventListener("input", event => {
+                if(Number(event.target.value) > 0)
+                    maxPledgeInput.dispatchEvent(new Event("input"));
+            });
+
+            maxPledgeInput.addEventListener("input", event => {
+                const maxPledge = Number(event.target.value);
+                const amount = Number(amountInput.value);
+                if(maxPledge < amount) {
+                    minimumPledgersInput.value = Math.ceil(amount/maxPledge);
+                }
+                else {
+                    event.target.value = amount;
+                    minimumPledgersInput.value = 1;
+                }
+            });
+            
+            minimumPledgersInput.addEventListener("input", event => {
+                const minimumPledgers = Math.ceil(Number(event.target.value));
+                const amount = Number(amountInput.value);
+
+                if(minimumPledgers) {
+                    minimumPledgersInput.value = minimumPledgers;
+                    maxPledgeInput.value = Math.ceil((100*(amount/minimumPledgers)))/100;;
+                }
+            });
+            
+            deadlineInput.addEventListener("input", event => {
+                const date = new Date(event.target.value);
+                if(Date.now() >= date.getTime()) {
+                    deadlineInput.value = '';
+                }
+            });
+
+            const params = (new URL(document.location)).searchParams;
+            const stripe_user_id = params.get("stripe_user_id");
+            if(typeof stripe_user_id == "string") {
+                stripeUserIdInput.value = stripe_user_id;
+                submitButton.disabled = false;
+            }
+        </script>
+    </body>
+</html>
