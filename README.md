@@ -4,7 +4,6 @@
 _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs), [Stripe Demo](https://www.youtube.com/watch?v=vl86RafZ8X8))_
 
 ## 📚 Table of Contents
-- [The 4 Elements of Content](#the-4-elements-of-content)
 - [Monetization Today](#monetization-today)
 - [Problems](#problems)
 - [Insight](#insight)
@@ -16,16 +15,6 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
 - [Use Cases](#use-cases)
 - [Revenue Model](#revenue-model)
 - [Building a Community](#building-a-community)
-
-## The 4 Elements of Content
-🖌️ Creation
-
-🗄️ Hosting
-
-🔎 Discovery
-
-💰 Monetization
-
 
 ## Monetization Today
 1. Pay-per-Media  
