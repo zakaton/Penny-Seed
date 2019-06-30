@@ -118,14 +118,14 @@ _There are 3 levels developers can interface with PennySeed:_
 
 
 ## 🤔 Use Cases
-### 👩‍🎨 Artists  
+#### 👩‍🎨 Artists  
 - Artists can use the base model to maintain a stable income  
 - Content can be made free to the public, making it easier to gain more and more followers  
 - Pledgers can access "bonus content" using their pledger id  
 - Earlier pledgers can receive a "dividend" as later campaigns pay a percentage back, crowdsourcing "Content Curators" as people look for new artists to support early  
 - Different "Pledge Types" can be defined, allowing some pledgers to license the Artist's content. If the Pledger is also a PennySeed user, they can forward a percentage of their Campaigns to the Original Artist's Campaign  
 
-### 🎫 Events  
+#### 🎫 Events  
 - A Campaign can be made to cover all costs of the Event (venue, catering, staff)  
 - People can attend by Pledging, using their pledger id as a ticket  
 - The more "tickets" are sold, the lower the ticket price, incentivizing pledgers to get others to attend  
@@ -133,25 +133,25 @@ _There are 3 levels developers can interface with PennySeed:_
 - A "Maximum Pledgers" can be specified to ensure not "too many" people attend  
 - A "Minimum Pledger Age" can be specified if alcohol is involved  
 
-### 👩‍💻 API Developers  
+#### 👩‍💻 API Developers  
 - Like Artists, API developers can use the base model for a standard income
 - Pledgers can use their pledge id as an API Access Key to use the API
 - The Pledge Amount can be based on API usage
 
-### 📠 IoT Devices  
+#### 📠 IoT Devices  
 - A Campaign can be made to cover the cost of the device (e.g. a Coffee Machine shared by a Coworking Space  
 - People use the IoT device by pledging, using the pledger id to access the device  
 - The Pledge Amount can be based on usage (pledge multiple times for multiple uses) or a single pledge for "full access"  
 - The Campaign can be set to be the day before its return policy, allowing the Campaigner to return the IoT device when the Campaign isn't met  
 
-### 🏢 Coworking Spaces  
+#### 🏢 Coworking Spaces  
 - A Recurring Campaign can be made to cover the total cost of running the Space (Rent, Utilities, Staff, Insurance, Maintenance)  
 - Pledgers can use their pledge id to access the CoWorking Space, encouraging more people to join to lower costs  
 - Pledge costs can vary based on attendance or usage of provided IoT equipment  
 - Events can be hosted in the Space, whose venue costs are coupled to the rent costs  
 - Startups and Unemployeed attendees can pledge indirectly with future earnings  
 
-### 👩‍💼 Startup Funding  
+#### 👩‍💼 Startup Funding  
 - Pledges can act as "shares"  
 - A Recurring Campaign can forward a percent of Compaigns to past Campaign Pledgers, acing as a dividend  
 - Product Startups can treat Pledges as Preorders, setting a Maximum number of Pledges for a fixed set of products  
