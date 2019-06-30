@@ -1,5 +1,5 @@
 <a href="https://webcomicname.com/" target="_blank">![Webcomic Name](images/oh-no.png)</a>
-_Credit to [Alex Norris](https://webcomicname.com/about) ([Website](https://webcomicname.com/), [Twitter](https://twitter.com/dorrismccomics), [Facebook](https://www.facebook.com/webcomicname/), [Instagram](https://www.instagram.com/webcomic_name/)) - Support him on [Patreon!](https://www.patreon.com/dorrismccomics)_
+Webcomic made by [Alex Norris](https://webcomicname.com/about) ([Website](https://webcomicname.com/), [Twitter](https://twitter.com/dorrismccomics), [Facebook](https://www.facebook.com/webcomicname/), [Instagram](https://www.instagram.com/webcomic_name/)) - Support him on [Patreon!](https://www.patreon.com/dorrismccomics)_
 
 # Penny Seed
 _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs), [Stripe Demo](https://www.youtube.com/watch?v=vl86RafZ8X8))_
