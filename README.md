@@ -96,16 +96,16 @@ _Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs),
     - Deadline
 2. A page is created, including the Campaign Details, the current number of Pledgers so far, and a "Pledge" button
 3. The Creator shares the link with all of their followers
-4. People pledge by paying (Target Amount)/(Minimum Pledgers)
+4. Pledgers submit their payment information (via [Stripe](https://stripe.com/) or [MetaMask](https://metamask.io/)), but aren't charged until the deadline is reached
 
 By the deadline, if the Minimum number of Pledgers is met:
 
-5. The Target Amount is sent to the Creator
-6. Pledgers are refunded the difference between the Maximum Pledge Amount and the (Target Amount)/(Total Pledgers)
+5. Each pledger is charged (Target Amount)/(Number of Pledgers)
+6. The Target Amount is sent to the Creator
 
 Otherwise, if the Minimum Number of Pledgers isn't met:
 
-5. Pledgers are refunded the full Pledge Amount
+5. Nothing happens; life goes on
 
 ## 👩‍💻 Developer Experience
 _There are 3 levels developers can interface with PennySeed:_
