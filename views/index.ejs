@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Penny Seed</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+
+    <body>
+        <h1>Penny Seed</h1>
+        <% if(profile !== null) { %>
+            <h3>Welcome back, <%= profile.username %>! <a href="/logout">(Logout)</a></h3>
+        <% } %>
+
+        <h2>My Account</h2>
+        <ul>
+            <% if(user !== null) { %>
+                <% if(user.customerId == undefined) { %>
+                    <%- include('./stripe') %>
+                <% } %>
+                <% if(user.connectId == undefined) { %>
+                    <li><a href=<%=`https://connect.stripe.com/express/oauth/authorize?redirect_uri=http://localhost:3000/create-account&client_id=${STRIPE_CONNECT_CLIENT_ID}&suggested_capabilities[]=card_payments`%>>Create Campaigner Account</a></li>
+                <% } else { %>
+                    <li><a target="_blank" href=<%=`/dashboard`%>>Stripe Dashboard</a></li>
+                <% } %>
+            <% } else { %>
+                <li><a href="/login">Login with Twitter</a></li>
+            <% } %>
+        </ul>
+
+        <%- include('./campaigns') %>
+    </body>
+</html>

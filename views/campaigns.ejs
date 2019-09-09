@@ -1,0 +1,94 @@
+<% if(user !== null && user.connectId !== undefined) { %>
+    <form id="create-campaign" action="/create-campaign" method="POST">
+        <h2>Create Campaign</h2>
+
+        <label>Amount: $<input name="amount" type="number" placeholder="1.00" value="1.00" min="1" step="0.01"></label>
+        <br>
+        <label>Deadline: <input name="deadline" type="datetime-local"></label>
+        <br>
+        <label>Minimum number of Pledgers: <input name="minimumNumberOfPledgers" type="number" step="1" min="1" value="1"></label>
+        <br>
+        <label>Maximum Pledge Amount: $<input name="maximumPledgeAmount" type="number" min="0.01" step="0.01" value="1.00"></label>
+        <br>
+        <button type="submit" disabled>Create Campaign</button>
+    </form>
+
+    <script>
+        {
+            const form = document.querySelector("form#create-campaign");
+            const submit = form.querySelector(`button[type="submit"]`);
+
+            const inputs = {};
+
+            form.querySelectorAll("input").forEach(input => {
+                const name = input.name;
+                inputs[name] = input;
+                input.addEventListener("input", event => {
+                    if(event.target.type == "number") {
+                        event.target.value = isNaN(event.target.value)?
+                            1 :
+                            Number(event.target.value)
+                    }
+
+                    switch(name) {
+                        case "amount":
+                            inputs.maximumPledgeAmount.value = floatToDollar(Number(inputs.amount.value) / Number(inputs.minimumNumberOfPledgers.value));
+                            break;
+                        case "deadline":
+                            const deadline = new Date(inputs.deadline.value);
+                            submit.disabled = (deadline.getTime() < Date.now());
+                            break;
+                        case "maximumPledgeAmount":
+                            inputs.minimumNumberOfPledgers.value = Math.ceil(Number(inputs.amount.value) / Number(inputs.maximumPledgeAmount.value))
+                            break;
+                        case "minimumNumberOfPledgers":
+                            inputs.maximumPledgeAmount.value = floatToDollar(Number(inputs.amount.value) / Number(inputs.minimumNumberOfPledgers.value));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
+
+            function floatToDollar(value) {
+                value *= 100;
+                value = Math.ceil(value);
+                value /= 100;
+                return value;
+            }
+        }
+    </script>
+<% } %>
+
+<% if(campaigns.length > 0) { %>
+    <h2>Campaigns</h2>
+    <% campaigns.forEach((campaign, index) => { %>
+        <form class="campaign" data-campaign-index="<%= index %>" action="pledge" method="POST">
+            <h4>Campaign #<%=index%> <%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? "(Completed)" : '' %></h4>
+            <ul>
+                <li>Amount: $<%= campaign.amount %></li>
+                <li>Deadline: <%= campaign.deadline %></li>
+                <li>Number of Pledgers: <%= campaign.pledgers.length %></li>
+                <li>Minimum Number of Pledgers: <%= campaign.minimumNumberOfPledgers %></li>
+                <li>Max Pledge Amount: $<%= (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
+                <li>Current Pledge Amount: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? (0.01*(Math.ceil(100*(campaign.amount/campaign.pledgers.length)))) : (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
+                <li>Current Pledge Amount + Stripe Processing Fee: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? stripeCalculations.preprocessedPledgeAmount(0.01*(Math.ceil(100*(campaign.amount/campaign.pledgers.length)))) : stripeCalculations.preprocessedPledgeAmount(0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
+                <% if(user !== null && !campaign.campaigner._id.equals(user._id) && campaign.pledgers.findIndex(pledger => pledger._id.equals(user._id)) == -1) { %>
+                <li>Your Pledge Amount: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? (0.01*(Math.ceil(100*(campaign.amount/(campaign.minimumNumberOfPledgers+1))))) : (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
+                <li>Your Pledge Amount + Stripe Processing Fee: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? stripeCalculations.preprocessedPledgeAmount((0.01*(Math.ceil(100*(campaign.amount/(campaign.minimumNumberOfPledgers+1)))))) : stripeCalculations.preprocessedPledgeAmount((0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers))))) %></li>
+                <% } %>
+            </ul>
+            <input name="_id" hidden readonly value="<%= campaign._id %>">
+            <button type="submit" <%= (user !== null && user.customerId !== undefined && !user._id.equals(campaign.campaigner._id) && (new Date(campaign.deadline)).getTime() > Date.now() && (campaign.pledgers.findIndex(pledger => pledger._id.equals(user._id)) == -1))? "enabled" : "disabled" %> >Pledge</button>
+        </form>
+
+        <script>
+            {
+                const form = document.querySelector(`form[data-campaign-index="<%= index %>"]`);
+                const submit = form.querySelector(`button[type="submit"]`);
+            }
+        </script>
+
+        <%  %>
+    <% }); %>
+<% } %>
