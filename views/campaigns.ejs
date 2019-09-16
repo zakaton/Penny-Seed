@@ -1,4 +1,24 @@
-<% if(user !== null && user.connectId !== undefined) { %>
+<script>
+    function floatToDollar(value) {
+        value *= 100;
+        value = Math.ceil(value);
+        value /= 100;
+        return value;
+    }
+    
+    var contract;
+    if(typeof web3 !== "undefined") {
+        ethereum.enable()
+            .then(accounts => {
+                fetch('/contract').then(response => response.json()).then(_contract => {
+                    contract = web3.eth.contract(_contract.abi).at(_contract.address);
+                    contract.allEvents({}, {fromBlock : 0, toBlock : "latest"}).watch((error, log) => console.log(log));
+                });
+            });
+    }
+</script>
+
+<% if(user !== null && user.connectId !== undefined && user.etherAddress !== undefined) { %>
     <form id="create-campaign" action="/create-campaign" method="POST">
         <h2>Create Campaign</h2>
 
@@ -10,6 +30,10 @@
         <br>
         <label>Maximum Pledge Amount: $<input name="maximumPledgeAmount" type="number" min="0.01" step="0.01" value="1.00"></label>
         <br>
+        <label>Wei: <input name="weiAmount" readonly type="number" min="1" step="1"></label>
+        <br>
+        <input hidden name="campaignIndex">
+        <input hidden name="transactionHash">
         <button type="submit" disabled>Create Campaign</button>
     </form>
 
@@ -33,6 +57,7 @@
                     switch(name) {
                         case "amount":
                             inputs.maximumPledgeAmount.value = floatToDollar(Number(inputs.amount.value) / Number(inputs.minimumNumberOfPledgers.value));
+                            inputs.weiAmount.value = Number(inputs.amount.value) * 5_327_364_750_834_100;
                             break;
                         case "deadline":
                             const deadline = new Date(inputs.deadline.value);
@@ -50,12 +75,21 @@
                 });
             });
 
-            function floatToDollar(value) {
-                value *= 100;
-                value = Math.ceil(value);
-                value /= 100;
-                return value;
-            }
+            form.addEventListener("submit", event => {
+                event.preventDefault();
+
+                const deadline = new Date(inputs.deadline.value);
+                const campaignPeriod = Math.floor((deadline.getTime() - Date.now())/1000);
+
+                contract.createCampaign(Number(inputs.weiAmount.value), Number(inputs.minimumNumberOfPledgers.value), campaignPeriod, (error, transactionHash) => {
+                    if(error == null) {
+                        inputs.transactionHash.value = transactionHash
+                        form.submit();
+                    }
+                    else
+                        console.error(error);
+                });
+            });
         }
     </script>
 <% } %>
@@ -64,28 +98,150 @@
     <h2>Campaigns</h2>
     <% campaigns.forEach((campaign, index) => { %>
         <form class="campaign" data-campaign-index="<%= index %>" action="pledge" method="POST">
-            <h4>Campaign #<%=index%> <%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? "(Completed)" : '' %></h4>
+            <h4>Campaign #<%=index%></h4>
             <ul>
-                <li>Amount: $<%= campaign.amount %></li>
-                <li>Deadline: <%= campaign.deadline %></li>
-                <li>Number of Pledgers: <%= campaign.pledgers.length %></li>
+                <li>Amount: $<span data-id="targetAmount"><%= campaign.amount %></span></li>
+                <li>Deadline: <span data-id="deadline"><%= campaign.deadline %></span></li>
+                <li>Number of Pledgers: <span data-id="numberOfPledgers"></span></li>
                 <li>Minimum Number of Pledgers: <%= campaign.minimumNumberOfPledgers %></li>
-                <li>Max Pledge Amount: $<%= (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
-                <li>Current Pledge Amount: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? (0.01*(Math.ceil(100*(campaign.amount/campaign.pledgers.length)))) : (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
-                <li>Current Pledge Amount + Stripe Processing Fee: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? stripeCalculations.preprocessedPledgeAmount(0.01*(Math.ceil(100*(campaign.amount/campaign.pledgers.length)))) : stripeCalculations.preprocessedPledgeAmount(0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
-                <% if(user !== null && !campaign.campaigner._id.equals(user._id) && campaign.pledgers.findIndex(pledger => pledger._id.equals(user._id)) == -1) { %>
-                <li>Your Pledge Amount: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? (0.01*(Math.ceil(100*(campaign.amount/(campaign.minimumNumberOfPledgers+1))))) : (0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers)))) %></li>
-                <li>Your Pledge Amount + Stripe Processing Fee: $<%= (campaign.pledgers.length >= campaign.minimumNumberOfPledgers)? stripeCalculations.preprocessedPledgeAmount((0.01*(Math.ceil(100*(campaign.amount/(campaign.minimumNumberOfPledgers+1)))))) : stripeCalculations.preprocessedPledgeAmount((0.01*(Math.ceil(100*(campaign.amount/campaign.minimumNumberOfPledgers))))) %></li>
-                <% } %>
+                <li>Max Pledge Amount: $<span data-id="maximumPledgeAmount"></span></li>
+                <li>Current Pledge Amount: $<span data-id="currentPledgeAmount"></span></li>
+                <li>Current Pledge Amount + Stripe Processing Fee: $<span data-id="currentPledgeAmountPlusFee"></span></li>
+                <li>Pledge Amount using MetaMask: $<span data-id="currentPledgeAmount"></span></li>
             </ul>
             <input name="_id" hidden readonly value="<%= campaign._id %>">
+            <input name="transactionHash" hidden readonly value="<%= campaign.transactionHash %>">
             <button type="submit" <%= (user !== null && user.customerId !== undefined && !user._id.equals(campaign.campaigner._id) && (new Date(campaign.deadline)).getTime() > Date.now() && (campaign.pledgers.findIndex(pledger => pledger._id.equals(user._id)) == -1))? "enabled" : "disabled" %> >Pledge</button>
+            <button id="pledgeWithMetamask" disabled>Pledge using MetaMask</button>
+
+            <button disabled id="claimMetamaskFunds">Claim Metamask Funds</button>
+            <button disabled id="redeemRefund">Redeem Refund</button>
+            <button disabled id="redeemRebate">Redeem Rebate</button>
         </form>
 
         <script>
             {
                 const form = document.querySelector(`form[data-campaign-index="<%= index %>"]`);
                 const submit = form.querySelector(`button[type="submit"]`);
+                const pledgeWithMetamask = form.querySelector(`#pledgeWithMetamask`);
+                
+                const claimMetamaskFunds = form.querySelector(`#claimMetamaskFunds`);
+                const redeemRebate = form.querySelector(`#redeemRebate`);
+                const redeemRefund = form.querySelector(`#redeemRefund`);
+
+                const deadline = new Date(form.querySelector(`[data-id="deadline"]`).innerText);
+                const passedDeadline = Date.now() > deadline.getTime();
+
+                const transactionHash = form.querySelector(`input[name="transactionHash"`).value;
+
+                if(typeof web3 !== "undefined" && transactionHash !== undefined) {
+                    fetch('/contract').then(response => response.json()).then(_contract => {
+                        contract = web3.eth.contract(_contract.abi).at(_contract.address);
+                        
+                        contract.CreatedCampaign({}, {fromBlock : 0, toBlock : "latest"}).get((error, events) => {
+                            const event = events.find(event => event.transactionHash == transactionHash);
+                            const campaignIndex = Number(event.args.campaignIndex);
+                            const targetAmount = Number(form.querySelector(`[data-id="targetAmount"]`).innerText);
+
+                            const minimumNumberOfPledgers = Number(event.args.minimumNumberOfPledgers);
+                            
+                            contract.campaigns(campaignIndex, (error, campaign) => {
+                                if(error == null) {
+                                    const numberOfPledgers = Number(campaign[7]);
+                                    form.querySelectorAll(`[data-id="numberOfPledgers"]`).forEach(div => {
+                                        div.innerText = numberOfPledgers;
+                                    });
+                                    form.querySelectorAll(`[data-id="maximumPledgeAmount"]`).forEach(div => {
+                                        div.innerText = floatToDollar(targetAmount / minimumNumberOfPledgers);
+                                    });
+                                    form.querySelectorAll(`[data-id="currentPledgeAmount"]`).forEach(div => {
+                                        div.innerText = (numberOfPledgers < minimumNumberOfPledgers)?
+                                            floatToDollar(targetAmount / minimumNumberOfPledgers) :
+                                            floatToDollar(targetAmount / numberOfPledgers);
+                                    });
+                                    form.querySelectorAll(`[data-id="currentPledgeAmountPlusFee"]`).forEach(div => {
+                                        div.innerText = floatToDollar((targetAmount / minimumNumberOfPledgers) + ((targetAmount / minimumNumberOfPledgers) * 0.029) + 0.30);
+                                    });
+                                }
+                            });
+                            
+                            ethereum.enable()
+                                .then(accounts => {
+                                    contract.campaigns(campaignIndex, (error, campaign) => {
+                                        const minimumNumberOfPledgers = Number(campaign[6]);
+                                        const numberOfPledgers = Number(campaign[7]);
+                                        const campaignSucceeded = minimumNumberOfPledgers >= numberOfPledgers;
+                                        const targetAmountWei = Number(campaign[1]);
+
+                                        if(event.args.campaigner !== accounts[0]) {
+                                            if(error == null) {
+                                                contract.PledgedToCampaign({campaignIndex, pledger : accounts[0]}).get((error, events) => {
+                                                    if(events.length == 0) {
+                                                        pledgeWithMetamask.disabled = false;
+                                                        pledgeWithMetamask.addEventListener("click", event => {
+                                                            event.preventDefault();
+
+                                                            console.log(campaignIndex)
+                                                            contract.pledgeToCampaign.sendTransaction(campaignIndex, {from : accounts[0], value : Math.floor(targetAmountWei/minimumNumberOfPledgers)}, (error, _transactionHash) => {
+                                                                if(error == null) {
+                                                                    console.log(_transactionHash);
+                                                                    window.location.href = '/';
+                                                                }
+                                                            })
+                                                        })
+                                                    }
+                                                    else {
+                                                        if(passedDeadline) {
+                                                            if(campaignSucceeded) {
+                                                                redeemRebate.disabled = false;
+                                                                redeemRebate.addEventListener("click", event => {
+                                                                    contract.redeemRebate(campaignIndex, (error, _transactionHash) => {
+                                                                        if(error == null) {
+                                                                            console.log(_transactionHash);
+                                                                            window.location.href = '/';
+                                                                        }
+                                                                    })
+                                                                });
+                                                            }
+                                                            else {
+                                                                redeemRefund.disabled = false;
+                                                                redeemRefund.addEventListener("click", event => {
+                                                                    contract.redeemRefund(campaignIndex, (error, _transactionHash) => {
+                                                                        console.log(_transactionHash);
+                                                                        window.location.href = '/';
+                                                                    });
+                                                                });
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                console.error(error);
+                                        }
+                                        else {
+                                            if(passedDeadline) {
+                                                if(campaignSucceeded) {
+                                                    claimMetamaskFunds.disabled = false;
+                                                    claimMetamaskFunds.addEventListener("click", event => {
+                                                        event.preventDefault();
+                                                        contract.claimFunds(campaignIndex, (error, _transactionHash) => {
+                                                            if(error == null) {
+                                                                window.location.href = '/';
+                                                            }
+                                                            else
+                                                                console.error(error);
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+                                })
+                            
+                        });
+                    });
+                }
             }
         </script>
 

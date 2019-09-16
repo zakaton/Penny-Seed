@@ -21,6 +21,26 @@
                 <% } else { %>
                     <li><a target="_blank" href=<%=`/dashboard`%>>Stripe Dashboard</a></li>
                 <% } %>
+                <% if(user.etherAddress == undefined) { %>
+                    <form id="addEtherAddress" action="/add-ether-address" method="POST">
+                        <input hidden name="etherAddress">
+                        <button type="submit" disabled>Add Ether Address</button>
+                    </form>
+                    <script>
+                        {
+                            window.addEventListener("load", () => {
+                                if(typeof web3 !== "undefined") {
+                                    ethereum.enable()
+                                        .then(accounts => {
+                                            const form = document.getElementById("addEtherAddress");
+                                            form.querySelector(`input[name="etherAddress"]`).value = accounts[0];
+                                            form.querySelector("button").disabled = false;
+                                        });
+                                }
+                            });
+                        }
+                    </script>
+                <% } %>
             <% } else { %>
                 <li><a href="/login">Login with Twitter</a></li>
             <% } %>

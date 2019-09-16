@@ -11,6 +11,17 @@ const Campaign = require('../models/Campaign');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const stripeCalculations = require('../stripeCalculations');
 
+const Web3 = require('web3');
+const web3 = new Web3('http://localhost:8545');
+
+const Contract = require('../Contract.js');
+var contract;
+Contract()
+    .then(_contract => {
+        console.log("connected to contract");
+        contract = _contract;
+    });
+
 const {STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY, STRIPE_CONNECT_CLIENT_ID} = process.env;
 
 router.get('/', (request, response) => {
@@ -26,7 +37,7 @@ router.get('/', (request, response) => {
                         STRIPE_PUBLIC_KEY,
                         STRIPE_CONNECT_CLIENT_ID,
                         campaigns,
-                        stripeCalculations
+                        stripeCalculations,
                     });
                 });
             }
@@ -35,11 +46,18 @@ router.get('/', (request, response) => {
                     user : null,
                     profile : null,
                     campaigns,
-                    stripeCalculations
+                    stripeCalculations,
                 });
             }
         });
 });
+
+router.get('/contract', (request, response) => {
+    response.json({
+        address : contract.options.address,
+        abi : contract.options.jsonInterface,
+    });
+})
 
 router.post('/add-card', (request, response) => {
     const {stripeToken} = request.body;
@@ -54,6 +72,18 @@ router.post('/add-card', (request, response) => {
             _user.save();
             response.redirect('/');
         });
+    });
+});
+
+router.post('/add-ether-address', (request, response) => {
+    const {etherAddress} = request.body;
+    const {user} = request;
+    User.findOne({
+        id : user.id
+    }).then(_user => {
+        _user.etherAddress = etherAddress;
+        _user.save();
+        response.redirect('/');
     });
 });
 
@@ -97,7 +127,7 @@ router.get('/dashboard', (request, response) => {
 });
 
 router.post('/create-campaign', (request, response) => {
-    const {amount, deadline, minimumNumberOfPledgers, maximumPledgeAmount} = request.body;
+    const {amount, deadline, minimumNumberOfPledgers, maximumPledgeAmount, transactionHash} = request.body;
     console.log(request.body);
     User.findOne({
         id : request.user.id,
@@ -107,8 +137,21 @@ router.post('/create-campaign', (request, response) => {
             deadline,
             amount,
             minimumNumberOfPledgers,
+            transactionHash,
         });
         console.log(campaign);
+
+        contract.methods.campaigns(0).call({from : web3.eth.accounts[0]}, (error, result) => {
+            console.log(error, result);
+        });
+        
+        var event;
+        contract.getPastEvents("CreatedCampaign", {filter : {transactionHash}})
+            .then(events => {
+                event = events[0];
+                console.log(event);
+            });
+
         campaign.save()
             .then(() => {
                 schedule.scheduleJob(new Date(deadline), () => {
@@ -116,45 +159,63 @@ router.post('/create-campaign', (request, response) => {
                         _id : campaign._id,    
                     }).populate('campaigner').populate('pledgers')
                     .then(campaign => {
-                        console.log("Here is where you'd charge everyone if successful!")
-                        if(campaign.pledgers.length >= campaign.minimumNumberOfPledgers) {
-                            console.log("Campaign Succeeded!")
+                        console.log("Here is where you'd charge everyone if successful!");
+                        console.log(transactionHash);
+                        contract.getPastEvents("CreatedCampaign", {})
+                            .then(events => {
+                                console.log(events);
+                                // WHy does this happen?!
+                                console.log(transactionHash);
+                                //const event = events.find(event => event.transactionHash = transactionHash);
 
-                            var amount = 0;
-                            {
-                                var campaignAmount = Number(campaign.amount);
-                                    campaignAmount *= 100;
-                                    campaignAmount /= campaign.pledgers.length;
-                                    campaignAmount = Math.ceil(campaignAmount);
-                                    amount = campaignAmount;
-                                    amount = 100*stripeCalculations.preprocessedPledgeAmount(amount/100);
-                            }
+                                const campaignIndex = Number(event.returnValues.campaignIndex);
+                                contract.methods.campaigns(campaignIndex).call({from : web3.eth.accounts[0]}, (error, result) => {
+                                    console.log(error, result);
+                                    const numberOfPledgers = Number(result[7]);
 
-                            stripe.accounts.retrieve(campaign.campaigner.connectId, (error, account) => {
-                                if(account.charges_enabled) {
-                                    campaign.pledgers.forEach(pledger => {
-                                        stripe.tokens.create({
-                                            customer : pledger.customerId,
-                                        }, {
-                                            stripe_account : campaign.campaigner.connectId,
-                                        }).then(token => {
-                                            stripe.charges.create({
-                                                amount,
-                                                currency : 'usd',
-                                                source : token.id,
-                                            }, {
-                                                stripe_account : campaign.campaigner.connectId,
-                                            }).then(charge => {
-                                                console.log(charge);
-                                            });
+                                    console.log(campaignIndex, numberOfPledgers);
+
+
+                                    if(numberOfPledgers >= campaign.minimumNumberOfPledgers) {
+                                        console.log("Campaign Succeeded!")
+
+                                        var amount = 0;
+                                        {
+                                            var campaignAmount = Number(campaign.amount);
+                                                campaignAmount *= 100;
+                                                campaignAmount /= numberOfPledgers;
+                                                campaignAmount = Math.ceil(campaignAmount);
+                                                amount = campaignAmount;
+                                                amount = 100*stripeCalculations.preprocessedPledgeAmount(amount/100);
+                                        }
+            
+                                        stripe.accounts.retrieve(campaign.campaigner.connectId, (error, account) => {
+                                            if(account.charges_enabled) {
+                                                campaign.pledgers.forEach(pledger => {
+                                                    stripe.tokens.create({
+                                                        customer : pledger.customerId,
+                                                    }, {
+                                                        stripe_account : campaign.campaigner.connectId,
+                                                    }).then(token => {
+                                                        stripe.charges.create({
+                                                            amount,
+                                                            currency : 'usd',
+                                                            source : token.id,
+                                                        }, {
+                                                            stripe_account : campaign.campaigner.connectId,
+                                                        }).then(charge => {
+                                                            console.log(charge);
+                                                        });
+                                                    });
+                                                });
+                                            }
                                         });
-                                    });
-                                }
+                                    }
+                                    else {
+                                        console.log("Campaign Failed!");
+                                    }
+                                });
                             });
-                        }
-                        else {
-                            console.log("Campaign Failed!");
-                        }
                     });
                 });
                 response.redirect('/');
@@ -176,7 +237,20 @@ router.post('/pledge', (request, response) => {
                 campaign.pledgers.push(user);
                 console.log(campaign);
                 campaign.save()
-                    .then(() => response.redirect('/'));
+                    .then(() => {
+                        const {transactionHash} = campaign;
+                        contract.getPastEvents("CreatedCampaign", {filter : {transactionHash}})
+                            .then(events => {
+                                console.log(events);
+                                const campaignIndex = Number(events[0].returnValues.campaignIndex);
+                                contract.methods.addExternalPledger(campaignIndex).send({from : web3.eth.accounts[0]}, (error, _transactionHash) => {
+                                    if(error == null) {
+                                        console.log(_transactionHash);
+                                        response.redirect('/');
+                                    }
+                                });
+                            });
+                    });
             }
             else {
                 response.redirect('/');

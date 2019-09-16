@@ -2,5 +2,5 @@
     "watch" : [
         "*"
     ],
-    "ext": "js, ejs"
+    "ext": "js, sol"
 }

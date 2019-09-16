@@ -1,8 +1,5 @@
 require('dotenv').config();
 
-const {STRIPE_SECRET_KEY, STRIPE_PUBLIC_KEY} = process.env;
-const stripe = require('stripe')(STRIPE_SECRET_KEY);
-
 const express = require('express');
 const flash = require('connect-flash');
 const session = require('express-session');
@@ -19,9 +16,10 @@ const app = express();
 const {MONGODB_CONNECTION_STRING} = process.env;
 const mongoose = require('mongoose');
 mongoose.connect(MONGODB_CONNECTION_STRING, {useNewUrlParser : true})
-    .then(() => console.log("Connected to database"))
+    .then(() => {
+        console.log("connected to database");
+    })
     .catch(error => console.log(error));
-
 
 // EJS
 app.set('view engine', 'ejs');

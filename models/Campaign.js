@@ -14,7 +14,8 @@ const campaignSchema = new mongoose.Schema({
     minimumNumberOfPledgers : {
         type : Number,
         min : 1,
-    }
+    },
+    transactionHash : String,
 });
 
 const Campaign = mongoose.model('Campaign', campaignSchema);
