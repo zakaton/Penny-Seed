@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "web3": "nodemon web3.js",
     "web3-server": "ganache-cli"
   },
   "keywords": [],

@@ -128,7 +128,6 @@ router.get('/dashboard', (request, response) => {
 
 router.post('/create-campaign', (request, response) => {
     const {amount, deadline, minimumNumberOfPledgers, maximumPledgeAmount, transactionHash} = request.body;
-    console.log(request.body);
     User.findOne({
         id : request.user.id,
     }).then(user => {
@@ -138,11 +137,6 @@ router.post('/create-campaign', (request, response) => {
             amount,
             minimumNumberOfPledgers,
             transactionHash,
-        });
-        console.log(campaign);
-
-        contract.methods.campaigns(0).call({from : web3.eth.accounts[0]}, (error, result) => {
-            console.log(error, result);
         });
         
         var event;
@@ -160,13 +154,9 @@ router.post('/create-campaign', (request, response) => {
                     }).populate('campaigner').populate('pledgers')
                     .then(campaign => {
                         console.log("Here is where you'd charge everyone if successful!");
-                        console.log(transactionHash);
                         contract.getPastEvents("CreatedCampaign", {})
                             .then(events => {
                                 console.log(events);
-                                // WHy does this happen?!
-                                console.log(transactionHash);
-                                //const event = events.find(event => event.transactionHash = transactionHash);
 
                                 const campaignIndex = Number(event.returnValues.campaignIndex);
                                 contract.methods.campaigns(campaignIndex).call({from : web3.eth.accounts[0]}, (error, result) => {

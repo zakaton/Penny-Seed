@@ -165,7 +165,7 @@ contract PennySeed {
         _;
     }
     modifier hasNotRedeemedRebate (uint _campaignIndex) {
-        require(campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed, "User has already redeemed Rebate");
+        require(!campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed, "User has already redeemed Rebate");
         _;
     }
     function _getCampaignRebateAmount (uint _campaignIndex) private view validCampaignIndex(_campaignIndex) returns (uint rebateAmount) {
@@ -191,13 +191,13 @@ contract PennySeed {
         _;
     }
     modifier hasNotRedeemedRefund (uint _campaignIndex) {
-        require(campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed, "Pledger has already redeemed Refund");
+        require(!campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed, "Pledger has already redeemed Refund");
         _;
     }
     function _getCampaignRefundAmount (uint _campaignIndex) private view validCampaignIndex(_campaignIndex) returns (uint refundAmount) {
         refundAmount = _getCampaignMaxPledgeAmount(_campaignIndex);
     }
-    function redeemRefund (uint _campaignIndex) public validCampaignIndex(_campaignIndex) campaignHasEnded(_campaignIndex) campaignIsSuccessful(_campaignIndex) hasPledgedToCampaign(_campaignIndex) hasNotRedeemedRefund(_campaignIndex) {
+    function redeemRefund (uint _campaignIndex) public validCampaignIndex(_campaignIndex) campaignHasEnded(_campaignIndex) campaignIsNotSuccessful(_campaignIndex) hasPledgedToCampaign(_campaignIndex) hasNotRedeemedRefund(_campaignIndex) {
         campaigns[_campaignIndex].pledgers[msg.sender].hasRedeemed = true;
 
         emit RedeemedRefund(

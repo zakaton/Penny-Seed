@@ -170,13 +170,15 @@
                                     contract.campaigns(campaignIndex, (error, campaign) => {
                                         const minimumNumberOfPledgers = Number(campaign[6]);
                                         const numberOfPledgers = Number(campaign[7]);
-                                        const campaignSucceeded = minimumNumberOfPledgers >= numberOfPledgers;
+                                        const campaignSucceeded = numberOfPledgers >= minimumNumberOfPledgers;
                                         const targetAmountWei = Number(campaign[1]);
+                                        const claimedFunds = campaign[5];
 
                                         if(event.args.campaigner !== accounts[0]) {
                                             if(error == null) {
-                                                contract.PledgedToCampaign({campaignIndex, pledger : accounts[0]}).get((error, events) => {
+                                                contract.PledgedToCampaign({campaignIndex, pledger : accounts[0]}, {fromBlock : 0, toBlock : "latest"}).get((error, events) => {
                                                     if(events.length == 0) {
+
                                                         pledgeWithMetamask.disabled = false;
                                                         pledgeWithMetamask.addEventListener("click", event => {
                                                             event.preventDefault();
@@ -193,23 +195,35 @@
                                                     else {
                                                         if(passedDeadline) {
                                                             if(campaignSucceeded) {
-                                                                redeemRebate.disabled = false;
-                                                                redeemRebate.addEventListener("click", event => {
-                                                                    contract.redeemRebate(campaignIndex, (error, _transactionHash) => {
-                                                                        if(error == null) {
-                                                                            console.log(_transactionHash);
-                                                                            window.location.href = '/';
-                                                                        }
-                                                                    })
-                                                                });
+                                                                contract.RedeemedRebate({campaignIndex}, {fromBlock : 0, toBlock : "latest"}).get((error, events) => {
+                                                                    const event = events.find(event => event.args.pledger == accounts[0]);
+                                                                    if(event == undefined) {
+                                                                        redeemRebate.disabled = false;
+                                                                        redeemRebate.addEventListener("click", event => {
+                                                                            contract.redeemRebate(campaignIndex, (error, _transactionHash) => {
+                                                                                if(error == null) {
+                                                                                    console.log(_transactionHash);
+                                                                                    window.location.href = '/';
+                                                                                }
+                                                                                else
+                                                                                    console.error(error);
+                                                                            })
+                                                                        });
+                                                                    }
+                                                                })
                                                             }
                                                             else {
-                                                                redeemRefund.disabled = false;
-                                                                redeemRefund.addEventListener("click", event => {
-                                                                    contract.redeemRefund(campaignIndex, (error, _transactionHash) => {
-                                                                        console.log(_transactionHash);
-                                                                        window.location.href = '/';
-                                                                    });
+                                                                contract.RedeemedRebate({campaignIndex}, {fromBlock : 0, toBlock : "latest"}).get((error, events) => {
+                                                                    const event = events.find(event => event.args.pledger == accounts[0]);
+                                                                    if(event == undefined) {
+                                                                        redeemRefund.disabled = false;
+                                                                        redeemRefund.addEventListener("click", event => {
+                                                                            contract.redeemRefund(campaignIndex, (error, _transactionHash) => {
+                                                                                console.log(_transactionHash);
+                                                                                window.location.href = '/';
+                                                                            });
+                                                                        });
+                                                                    }
                                                                 });
                                                             }
                                                         }
@@ -221,7 +235,7 @@
                                         }
                                         else {
                                             if(passedDeadline) {
-                                                if(campaignSucceeded) {
+                                                if(campaignSucceeded && !claimedFunds) {
                                                     claimMetamaskFunds.disabled = false;
                                                     claimMetamaskFunds.addEventListener("click", event => {
                                                         event.preventDefault();
