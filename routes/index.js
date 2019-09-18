@@ -88,6 +88,7 @@ router.post('/add-ether-address', (request, response) => {
 });
 
 router.get('/create-account', (request, response) => {
+    console.log(request);
     const {code} = request.query;
     Request.post(`https://connect.stripe.com/oauth/token?client_secret=${STRIPE_SECRET_KEY}&code=${code}&grant_type=authorization_code`, (err, httpResponse, body) => {
         const account = JSON.parse(body);
@@ -213,9 +214,21 @@ router.post('/create-campaign', (request, response) => {
     });
 });
 
-router.post('/pledge', (request, response) => {
-    const {_id} = request.body;
+router.post('/test', (request, response) => {
+    const {transactionHash, campaignIndex} = request.body;
+    console.log(transactionHash);
+    contract.getPastEvents("CreatedCampaign", {
+        fromBlock : 0,
+        toBlock : "latest",
+    }, (error, results) => {
+        console.log(error, results);
+        response.json(results);
+    })
+})
 
+router.post('/pledge', (request, response) => {
+    console.log("Pledging!!")
+    const {_id} = request.body;
     User.findOne({
         id : request.user.id,
     }).then(user => {
@@ -223,21 +236,26 @@ router.post('/pledge', (request, response) => {
             _id,
         }).populate('campaigner').populate('pledgers')
         .then(campaign => {
+            console.log(campaign);
             if(user !== null && user.customerId !== undefined && !user._id.equals(campaign.campaigner._id) && (new Date(campaign.deadline)).getTime() > Date.now() && (campaign.pledgers.findIndex(pledger => !pledger._id.equals(user._id)) == -1)) {
                 campaign.pledgers.push(user);
                 console.log(campaign);
                 campaign.save()
                     .then(() => {
                         const {transactionHash} = campaign;
-                        contract.getPastEvents("CreatedCampaign", {filter : {transactionHash}})
+                        console.log(campaign, transactionHash)
+                        contract.getPastEvents("CreatedCampaign", {fromBlock : 0, toBlock : "latest"})
                             .then(events => {
-                                console.log(events);
-                                const campaignIndex = Number(events[0].returnValues.campaignIndex);
-                                contract.methods.addExternalPledger(campaignIndex).send({from : web3.eth.accounts[0]}, (error, _transactionHash) => {
-                                    if(error == null) {
-                                        console.log(_transactionHash);
-                                        response.redirect('/');
-                                    }
+                                const event = events.find(event => event.transactionHash == transactionHash);
+                                const campaignIndex = Number(event.returnValues.campaignIndex);
+                                web3.eth.getAccounts(function (error, accounts) {
+                                    contract.methods.addExternalPledger(campaignIndex).send({from : accounts[0]}, (error, _transactionHash) => {
+                                        if(error == null) {
+                                            console.log(_transactionHash);
+                                            response.redirect('/');
+                                        }
+                                        else console.log(error);
+                                    });
                                 });
                             });
                     });

@@ -153,7 +153,7 @@ contract PennySeed {
             _campaignIndex
         );
 
-        msg.sender.transfer(campaigns[_campaignIndex].targetAmount);
+        msg.sender.transfer(campaigns[_campaignIndex].pledgedAmount);
     }
 
     event RedeemedRebate (

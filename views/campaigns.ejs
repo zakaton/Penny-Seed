@@ -97,7 +97,7 @@
 <% if(campaigns.length > 0) { %>
     <h2>Campaigns</h2>
     <% campaigns.forEach((campaign, index) => { %>
-        <form class="campaign" data-campaign-index="<%= index %>" action="pledge" method="POST">
+        <form class="campaign" data-campaign-index="<%= index %>" action="/pledge" method="POST">
             <h4>Campaign #<%=index%></h4>
             <ul>
                 <li>Amount: $<span data-id="targetAmount"><%= campaign.amount %></span></li>
@@ -175,9 +175,10 @@
                                         const claimedFunds = campaign[5];
 
                                         if(event.args.campaigner !== accounts[0]) {
-                                            if(error == null) {
+                                            if(error == null && !passedDeadline) {
                                                 contract.PledgedToCampaign({campaignIndex, pledger : accounts[0]}, {fromBlock : 0, toBlock : "latest"}).get((error, events) => {
                                                     if(events.length == 0) {
+                                                        // check if they've already paid using Stripe
 
                                                         pledgeWithMetamask.disabled = false;
                                                         pledgeWithMetamask.addEventListener("click", event => {
