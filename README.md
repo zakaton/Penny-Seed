@@ -2,7 +2,7 @@
 _Webcomic made by [Alex Norris](https://webcomicname.com/about) ([Website](https://webcomicname.com/), [Twitter](https://twitter.com/dorrismccomics), [Facebook](https://www.facebook.com/webcomicname/), [Instagram](https://www.instagram.com/webcomic_name/)) - Support him on [Patreon!](https://www.patreon.com/dorrismccomics)_
 
 # PennySeed
-_Decentralized Income ([Web3 Demo](https://www.youtube.com/watch?v=OgIL0ZPbbXs), [Stripe Demo](https://www.youtube.com/watch?v=vl86RafZ8X8))_
+_Decentralized Income ([Demo](https://www.youtube.com/watch?v=mWhSeT7BQWM))_
 
 ## 📚 Table of Contents
 [💰 Monetization Today](#-monetization-today)  
