@@ -1,0 +1,92 @@
+<h2>Account</h2>
+
+<ul>
+    <% if(typeof _user.customerId == "undefined") { %>
+        <li>
+            <%- include('./stripe')  %>
+        </li>
+    <% } else { %>
+        <!-- Show credit card info? -->
+    <% } %>
+
+    <% if(typeof _user.connectId !== "undefined") { %>
+        <a href='/account/stripe-dashboard' target="_blank">
+            <li>Stripe Connect Dashboard</li>
+        </a>
+    <% } else { %>
+        <a href=<%=`https://connect.stripe.com/express/oauth/authorize?redirect_uri=http://localhost:3000/account/add-stripe-connect&client_id=${STRIPE_CONNECT_CLIENT_ID}&suggested_capabilities[]=card_payments`%>>
+            <li>Create Stripe Connect Account</li>
+        </a>
+    <% } %>
+
+    <% if(typeof _user.etherAddress !== "undefined") { %>
+        <li>Ether Address: <%= _user.etherAddress %></li>   
+    <% } else { %>
+        <li style="display: none" id="addEtherAddress">
+            <form action="/account/add-ether-address" method="POST">
+                <select hidden name="etherAddress"></select>
+                <button disabled type="submit">Add Ether Address</button>
+            </form>
+        </li>
+
+        <a style="display: none" id="metamaskLink" href="https://metamask.io/" target="_blank">
+            <li>Install MetaMask to add an Ether Address</li>
+        </a>
+        
+        <script>
+            {
+                const addEtherAddress = document.getElementById("addEtherAddress");
+                    const form = addEtherAddress.querySelector(`form`);
+                        const select = form.querySelector(`select`);
+                        const submit = form.querySelector(`button`);
+
+                const metamaskLink = document.getElementById("metamaskLink");
+                
+                if(typeof web3 !== "undefined") {
+                    addEtherAddress.style.display = '';                    
+                    
+                    ethereum.enable()
+                        .then(accounts => {
+                            accounts.forEach(account => {
+                                select.innerHTML = `<option value="${account}">${account}</option>`;
+                            });
+                            select.hidden = false;
+                            submit.disabled = false;
+                        });
+                }
+                else {
+                    metamaskLink.style.display = '';
+                }
+            }
+        </script>
+    <% } %>
+
+    <% if(_user.connectId !== undefined && _user.etherAddress !== undefined) { %>
+        <li>
+            <%- include('./create-campaign') %>
+        </li>
+    <% } %>
+
+    <% if(createdCampaigns.length > 0) { %>
+        <li>My Campaigns:</li>
+        <ul>
+            <% createdCampaigns.forEach(createdCampaign => { %>
+                <li>
+                    <%- include('campaign', {campaign : createdCampaign}) %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+
+
+    <% if(pledgedCampaigns.length > 0) { %>
+        <li>Campaigns I've pledged to:</li>
+        <ul>
+            <% pledgedCampaigns.forEach(pledgedCampaign => { %>
+                <li>
+                    <%- include('campaign', {campaign: pledgedCampaign}) %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+</ul>

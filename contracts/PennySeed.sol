@@ -38,12 +38,16 @@ contract PennySeed {
 
         uint256 startTime,
         uint256 endTime,
+        
+        uint deadline,
 
         uint256 targetAmount,
+        uint targetAmountUSD,
+
         uint256 minimumNumberOfPledgers
     );
 
-    function createCampaign (uint256 _targetAmount, uint256 _minimumNumberOfPledgers, uint256 _period) public {
+    function createCampaign (uint256 _targetAmount, uint256 _minimumNumberOfPledgers, uint256 _period,  uint _targetAmountUSD, uint _deadline) public {
         require(_minimumNumberOfPledgers > 0, "Minimum Number of Pledgers must be greater than 0");
         require(_period > 0, "_period must be greater than 0");
 
@@ -68,8 +72,11 @@ contract PennySeed {
 
             now,
             now + _period,
+            _deadline,
 
             _targetAmount,
+            _targetAmountUSD,
+
             _minimumNumberOfPledgers
         );
 
@@ -80,6 +87,7 @@ contract PennySeed {
         uint indexed campaignIndex,
         address indexed pledger
     );
+    
     modifier validCampaignIndex (uint _campaignIndex) {
         require(_campaignIndex >= 0 && _campaignIndex < numberOfCampaigns, "Invalid Campaign Index");
         _;
