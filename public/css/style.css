@@ -1,0 +1,34 @@
+header {
+    width: 100%;
+}
+
+header > * {
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+nav > * {
+    display: inline;
+}
+
+footer {
+    text-align: center;
+}
+
+footer > * {
+    
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}

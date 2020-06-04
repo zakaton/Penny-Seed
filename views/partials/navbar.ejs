@@ -1,0 +1,14 @@
+<nav>
+    <a href='/'><h2>About</h2></a>
+    <a href='/campaigns'><h2>Campaigns</h2></a>
+    <% if(typeof user !== 'undefined') { %>
+        <a href='/profile'><h2>Profile</h2></a>
+        <% if(user.stripe_user_id !== undefined) { %>
+            <a href='/create-campaign'><h2>Create Campaign</h2></a>
+        <% } %>
+        <a href='/logout'><h2>Logout</h2></a>
+    <% } else { %>
+        <a href='/register'><h2>Register</h2></a>
+        <a href='/login'><h2>Login</h2></a>
+    <% } %>
+</nav>

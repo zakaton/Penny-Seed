@@ -69,9 +69,9 @@ _Decentralized Income ([Demo](https://twitter.com/ConcreteSciFi/status/117414194
 ❌ Manufacturing & Shipping Fees  
 
 ## 😔 Problems
-❌ [Processing Fees](https://stripe.com/pricing) (e.g. [Stripe](https://stripe.com/) charges 2.9% + $0.30 per payment)  
 ❌ Arbitrary Pricing with no guarantee of a stable income  
-❌ Not extendable for custom incentive structures  
+❌ Little incentive for suppters to encourage others to contribute  
+❌ Creator has to do extra work for money (merchanidise, commissions, side jobs, etc)  
 
 ## 💡 Insight
 - The Creator wants everyone to enjoy it
@@ -81,12 +81,9 @@ _Decentralized Income ([Demo](https://twitter.com/ConcreteSciFi/status/117414194
 ## 🤩 Solution
 ✔️ A "Split-the-Bill" Model that divides the Target Amount by the number of Pledgers  
 ✔️ A Minimal Design that doesn't try to be a Social Network  
-✔️ An Extendable Architecture that allows for integration with existing Content Production, Distribution, and Discovery Applications  
 
 ## 🔧 Implementation
-⚙️ Ethereum via [Solidity](https://solidity.readthedocs.io/en/v0.5.10/) for [minimal processing fees](https://bitinfocharts.com/comparison/ethereum-transactionfees.html)  
-⚙️ Blockchain ledger via [Web3](https://web3js.readthedocs.io/en/1.0/) for Proof-of-Pledge  
-⚙️ [Stripe](https://stripe.com/docs) fallback for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize adoption of a crypto-wallet like [MetaMask](https://metamask.io/)  
+⚙️ [Stripe](https://stripe.com/docs) for conventional payment methods, with the [processing fees](https://stripe.com/pricing) (2.9% + $0.30 per pledge) pushed on the pledger's end to incentivize sharing the campaign to reduce their pledge amount.
 
 ## 📱 User Experience
 1. A Creator creates a Campaign, specifying the following:
@@ -96,7 +93,7 @@ _Decentralized Income ([Demo](https://twitter.com/ConcreteSciFi/status/117414194
     - Deadline
 2. A page is created, including the Campaign Details, the current number of Pledgers so far, and a "Pledge" button
 3. The Creator shares the link with all of their followers
-4. Pledgers submit their payment information (via [Stripe](https://stripe.com/) or [MetaMask](https://metamask.io/)), but aren't charged until the deadline is reached
+4. Pledgers submit their payment information (via [Stripe](https://stripe.com/), but aren't charged until the deadline is reached
 
 By the deadline, if the Minimum number of Pledgers is met:
 
@@ -106,12 +103,6 @@ By the deadline, if the Minimum number of Pledgers is met:
 Otherwise, if the Minimum Number of Pledgers isn't met:
 
 5. Nothing happens; life goes on
-
-## 👩‍💻 Developer Experience
-_There are 3 levels developers can interface with PennySeed:_
-1. Accessing the `<penny-seed></penny-seed>` [Web Component](https://www.webcomponents.org/) for a simple interface with the smart contract, using eventListeners and attributes.
-2. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) on the front-end to allow pledging and query campaign information
-3. Using the [Web3 API](https://web3js.readthedocs.io/en/1.0/) on the [back-end](https://www.npmjs.com/package/web3) to add custom behavior to your campaign
 
 ## 👍 Benefits
 ✔️ Creators are guarenteed the Exact Amount they specify  

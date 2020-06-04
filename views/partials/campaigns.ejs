@@ -1,0 +1,9 @@
+<% campaigns.forEach((campaign, campaignIndex) => { %>
+    <%- include('campaign', {campaign, campaigner : (typeof campaigner !== 'undefined')? campaigner:getUserById(campaign.campaigner), user : (typeof user !== 'undefined')? user:undefined, userCustomer : (typeof userCustomer !== 'undefined')? userCustomer:undefined}) %>
+    <br>
+    <a href='/campaigns/<%= campaign.id %>'><button>Full Page</button></a>
+    <br>
+    <% if(campaignIndex < campaigns.length-1) { %>
+        <hr>
+    <% } %>
+<% }); %>

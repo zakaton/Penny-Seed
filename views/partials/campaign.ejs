@@ -1,0 +1,69 @@
+<div class='campaign' data-campaign-id='<%= campaign.id %>' id='campaign<%= campaign.id %>'>    
+    <h3>Campaign id: <span data-campaign-id><%= campaign.id %></span></h3>
+    <h3>Campaigner: <span data-campaigner-username><%= campaigner.username %></span></h3>
+    <h3>Funding Goal: $<span data-campaign-goal><%= campaign.goal %></span></h3>
+    <h3>Deadline: <span data-campaign-deadline></span></h3>
+    <h3>Minimum number of Pledgers: <%= campaign.minimumNumberOfPledgers %></h3>
+    <h3>Current number of Pledgers: <%= campaign.pledgers.length %>/<%= campaign.minimumNumberOfPledgers %></h3>
+    <h3>Maximum Pledge Amount: $<span data-campaign-maximum-pledge-amount>0</span></h3>
+    <h3>Current Pledge Amount: $<span data-campaign-current-pledge-amount>0</span></h3>
+
+    <% if(typeof user !== 'undefined') { %>
+        <% if(campaign.campaigner !== user.id) { %>
+            <% if(typeof userCustomer !== 'undefined' && userCustomer.invoice_settings.default_payment_method) { %>
+                <% if(campaign.ended) { %>
+
+                <% } else { %>
+                    <% if(campaign.pledgers.includes(user.id)) { %>
+                        <h3>Pledge Amount if you unpledge: $<span data-campaign-unpledge-amount>0</span></h3>
+                        <a href='/unpledge/<%= campaign.id %>'><button>Unpledge</button></a>
+                    <% } else { %>
+                        <h3>Pledge Amount if you pledge: $<span data-campaign-pledge-amount>0</span></h3>
+                        <a href='/pledge/<%= campaign.id %>'><button>Pledge</button></a>
+                    <% } %>
+                <% } %>
+            <% } else { %>
+            <% } %>
+        <% } else { %>
+            <% if(!campaign.ended) { %>
+                <a href='/remove-campaign/<%= campaign.id %>'><button>Cancel Campaign</button></a>
+            <% } %>
+        <% } %>
+    <% } else { %>
+    <% } %>
+
+    <script>
+        {
+            const campaign = {
+                deadline: new Date(<%= campaign.deadline %>),
+                goal: <%= campaign.goal %>,
+                minimumNumberOfPledgers: <%= campaign.minimumNumberOfPledgers %>,
+                currentNumberOfPledgers: <%= campaign.pledgers.length %>,
+                id : '<%= campaign.id %>',
+                canPledge : <%= Boolean(typeof userCustomer !== 'undefined' && userCustomer && userCustomer.invoice_settings.default_payment_method) %>,
+                pledged : <%= Boolean(typeof user !== 'undefined' && campaign.pledgers.includes(user.id)) %>,
+            };
+
+            const campaignContainer = document.querySelector(`div.campaign[data-campaign-id='${campaign.id}']`);
+
+            campaignContainer.querySelector('span[data-campaign-deadline]').innerText = campaign.deadline.toString();
+        
+            campaign.maximumPledgeAmount = truncateDollars(getAmountBeforeProcessing(campaign.goal/campaign.minimumNumberOfPledgers));
+            campaignContainer.querySelector('span[data-campaign-maximum-pledge-amount]').innerText = campaign.maximumPledgeAmount;
+            
+            campaign.currentPledgeAmount = truncateDollars(getAmountBeforeProcessing(campaign.goal/Math.max(campaign.minimumNumberOfPledgers, campaign.currentNumberOfPledgers)));
+            campaignContainer.querySelector(`span[data-campaign-current-pledge-amount]`).innerText = campaign.currentPledgeAmount;
+
+            if(campaign.canPledge) {
+                if(!campaign.pledged) {
+                    const pledgeAmount = truncateDollars(getAmountBeforeProcessing(campaign.goal/Math.max(campaign.minimumNumberOfPledgers, campaign.currentNumberOfPledgers+1)));
+                    campaignContainer.querySelector(`span[data-campaign-pledge-amount]`).innerText = pledgeAmount;
+                }
+                else {
+                    const unpledgeAmount = truncateDollars(getAmountBeforeProcessing(campaign.goal/Math.max(campaign.minimumNumberOfPledgers, campaign.currentNumberOfPledgers-1)));
+                    campaignContainer.querySelector(`span[data-campaign-unpledge-amount]`).innerText = unpledgeAmount;
+                }
+            }
+        }
+    </script>
+</div>

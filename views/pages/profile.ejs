@@ -1,0 +1,44 @@
+<h1>Profile</h1>
+
+<hr>
+
+<p class='success'><%= messages.success %></p>
+<p class='error'><%= messages.error %></p>
+
+<h2>User id: <span><%= profileUser.id %></span></h2>
+
+<h2>Username: <%= profileUser.username %></h2>
+
+<% if(typeof user !== 'undefined' && profileUser.id == user.id) { %>
+    <a href='/change-username'><button>Change Username</button></a>
+
+    <a href='/change-password'><button>Change Password</button></a>
+<% } %>
+
+<hr>
+
+<%- include('../partials/stripe-calculator') %>
+
+<h2>Campaigns</h2>
+<% if(typeof user !== 'undefined') { %>
+    <% if(user.stripe_user_id) { %>
+        <a href='/stripe/connect/dashboard'><button>Stripe Dashboard</button></a>
+        <hr>
+    <% } else { %>
+        <a href='/stripe/connect/create'><button>Create Stripe Account</button></a>
+    <% } %>
+<% } %>
+<%- include('../partials/campaigns', {campaigns: createdCampaigns}) %>
+
+<hr>
+
+<h2>Pledges</h2>
+<% if(typeof user !== 'undefined') { %>
+    <% if(userCustomer.invoice_settings.default_payment_method) { %>
+        <a href='/remove-payment-info'><button>Remove Payment Info</button></a>
+    <% } else { %>
+        
+        <a href='/add-payment-info'><button>Add Payment Info</button></a>
+    <% } %>
+<% } %>
+<%- include('../partials/campaigns', {campaigns: pledgedCampaigns}) %>
