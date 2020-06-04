@@ -1,0 +1,128 @@
+<h1>Create Campaign</h1>
+
+<hr>
+
+<form autocomplete='off' action='/create-campaign' method='POST'>
+    <div>
+        <label for='goal'>Funding Goal ($)</label>
+        <input name='goal' type='number' required step='0.01' min='0.01' value='1'>
+        <span class='error'><% // error %></span>
+    </div>
+
+    <div>
+        <label for='minimumNumberOfPledgers'>Minimum number of Pledgers</label>
+        <input name='minimumNumberOfPledgers' type='number' step='1' min='1' value='1'>
+        <span class='error'><% // error %></span>
+    </div>
+
+    <div>
+        <label for='maximumPledge'>Maximum Pledge Amount $</label>
+        <input name='maximumPledge' type='number' step='0.01' min='0.01' value='1'>
+    </div>
+
+    <div>
+        <label for='maximumPledgeProcessingFee'>Maximum Pledge Processing Fee $</label>
+        <input name='maximumPledgeProcessingFee' type='number' step='0.01' min='0.01' value='0.33' readonly>
+    </div>
+
+    <div>
+        <label for='maximumPledgePlusProcessing'>Maximum Pledge Amount (PLUS PROCESSING) $</label>
+        <input name='maximumPledgePlusProcessing' type='number' step='0.01' min='0.01' value='1' readonly>
+    </div>
+
+    <div>
+        <label for='deadline-local'>Deadline</label>
+        <input name='deadline-local' type='datetime-local' required>
+        <span class='error'><% // error %></span>
+    </div>
+
+    <input name='deadline' required hidden>
+
+    <button type='submit' disabled>Create Campaign</button>
+</form>
+
+<%- include('../partials/stripe-calculator') %>
+
+<script>
+    const goalInput = document.querySelector(`form input[name="goal"]`);
+    goalInput.addEventListener('input', event => {
+        let goal = Number(event.target.value);
+        goal = truncateDollars(goal);
+        goal = Math.max(0.01, goal);
+        event.target.value = goal;
+
+        updateMaximumPledge();
+    });
+    const updateGoal = () => {
+        const minimumNumberOfPledgers = Number(minimumNumberOfPledgersInput.value);
+        const maximumPledge = Number(maximumPledgeInput.value);
+
+        let goal = minimumNumberOfPledgers*maximumPledge;
+            goal = truncateDollars(goal);
+            goal = Math.max(0.01, goal);
+        
+        goalInput.value = goal;
+    }
+
+    const minimumNumberOfPledgersInput = document.querySelector(`form input[name="minimumNumberOfPledgers"]`);
+    minimumNumberOfPledgersInput.addEventListener('input', event => {
+        let minimumNumberOfPledgers = Number(event.target.value);
+            minimumNumberOfPledgers = Math.floor(minimumNumberOfPledgers);
+            minimumNumberOfPledgers = Math.max(1, minimumNumberOfPledgers);
+        
+        minimumNumberOfPledgersInput.value = minimumNumberOfPledgers;
+
+        updateMaximumPledge();
+    });
+
+    const maximumPledgeInput = document.querySelector('form input[name="maximumPledge"]');
+    maximumPledgeInput.addEventListener('input', event => {
+        let maximumPledge = Number(event.target.value);
+            maximumPledge = truncateDollars(maximumPledge);
+        
+        maximumPledgeInput.value = maximumPledge;
+        
+        updateGoal();
+        updateMaximumPledgeProcesingFee();
+        updateMaximumPledgePlusProcessing();
+    });
+    const updateMaximumPledge = () => {
+        const goal = Number(goalInput.value);
+        const minimumNumberOfPledgers = Number(minimumNumberOfPledgersInput.value);
+
+        let maximumPledge = goal/minimumNumberOfPledgers;
+            maximumPledge = truncateDollars(maximumPledge, false);
+        
+        maximumPledgeInput.value = maximumPledge;
+
+        updateMaximumPledgeProcesingFee();
+        updateMaximumPledgePlusProcessing();
+    }
+
+    const maximumPledgeProcessingFeeInput = document.querySelector('input[name="maximumPledgeProcessingFee"]');
+    const updateMaximumPledgeProcesingFee = () => {
+        const maximumPledge = Number(maximumPledgeInput.value);
+        maximumPledgeProcessingFeeInput.value = getProcessingFee(maximumPledge);
+    }
+
+    const maximumPledgePlusProcessingInput = document.querySelector('form input[name="maximumPledgePlusProcessing"]');
+    const updateMaximumPledgePlusProcessing = () => {
+        const maximumPledge = Number(maximumPledgeInput.value);
+        const maximumPledgePlusProcessing = getAmountBeforeProcessing(maximumPledge);
+        maximumPledgePlusProcessingInput.value = maximumPledgePlusProcessing;
+    }
+    updateMaximumPledgePlusProcessing();
+
+    let currentDate = new Date();
+        currentDate.setMinutes(currentDate.getMinutes() - currentDate.getTimezoneOffset());
+    const deadlineLocalInput= document.querySelector(`form input[name="deadline-local"]`);
+        deadlineLocalInput.value = currentDate.toISOString().substr(0, 16);
+    const deadlineInput = document.querySelector(`form input[name="deadline"]`);
+    deadlineLocalInput.addEventListener('input', event => {
+        const deadlineDate = new Date(event.target.value);
+        deadlineInput.value = deadlineDate.getTime();
+        submitButtom.disabled = !(deadlineDate.getTime() > Date.now())
+    });
+
+    const submitButtom = document.querySelector(`form button[type="submit"]`);
+</script>

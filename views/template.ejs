@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <title>Penny Seed</title>
+        <%- include('partials/head') %>
+    </head>
+
+    <body>
+        <%- include('partials/header') %>
+        <hr>
+        <%- include('partials/navbar') %>
+        <hr>
+
+        <%- include(`pages/${page}`) %>
+
+        <hr>
+        <%- include('partials/footer') %>
+    </body>
+</html>

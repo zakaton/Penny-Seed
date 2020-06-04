@@ -1,0 +1,83 @@
+<h1>Register</h1>
+
+<% if(messages.error) { %>
+    <p class='error'><%= messages.error %></p>
+<% } %>
+
+<form autocomplete='off' action='/register' method='POST'>
+    <div>
+        <label for='username'>Username</label>
+        <input name='username' type='text' id='username' required>
+
+        <button type='button' id='checkAvailability' disabled>check availability</button>
+        <span class='success'></span>
+        <span class='error'></span>
+    </div>
+
+    <div>
+        <label for='password'>Password</label>
+        <input name='password' type='password' required>
+    </div>
+
+    <div>
+        <label for='verifyPassword'>Verify Password</label>
+        <input name='verifyPassword' type='password' required>
+    </div>
+
+    <button type='submit' disabled>Create Account</button>
+</form>
+
+<script>
+    const usernameInput = document.querySelector(`form input[name='username']`);
+    const checkAvailabilityButton = document.querySelector(`form button#checkAvailability`);
+    const passwordInput = document.querySelector(`form input[name='password']`);
+    const verifyPasswordInput = document.querySelector(`form input[name='verifyPassword']`);
+    const submitButton = document.querySelector(`form button[type='submit']`);
+
+    let arePasswordsEqual = false;
+    const onInput = () => {
+        arePasswordsEqual = (passwordInput.value == verifyPasswordInput.value) && (passwordInput.value.length > 0);
+        updateSubmit();
+    }
+
+    [passwordInput, verifyPasswordInput].forEach(input => {
+        input.addEventListener('input', onInput);
+    });
+
+    const successSpan = document.querySelector(`form span.success`);
+    const errorSpan = document.querySelector(`form span.error`);
+
+    let isUsernameAvailable = false;
+    usernameInput.addEventListener('input', event => {
+        isUsernameAvailable = false;
+        updateSubmit();
+        
+        checkAvailabilityButton.disabled = false;
+
+        successSpan.innerText = errorSpan.innerText = '';
+    });
+    checkAvailabilityButton.addEventListener('click', event => {
+        const username = usernameInput.value;
+        fetch('./username-available', {
+            method : 'POST',
+            body : JSON.stringify({username}),
+            headers : {"Content-Type": "application/json"}
+        }).then(response => response.json()).then(object => {
+            const {available} = object;
+
+            isUsernameAvailable = available;
+            updateSubmit();
+
+            successSpan.innerText = available?
+                `username is available!`:
+                ``;
+            errorSpan.innerText = available?
+                ``:
+                `username is not available`;
+        });
+    });
+
+    const updateSubmit = () => {
+        submitButton.disabled = !(arePasswordsEqual && isUsernameAvailable);
+    }
+</script>

@@ -1,0 +1,22 @@
+<script>
+    function truncateDollars(value, floor = true) {
+        value *= 100;
+        value = floor?
+            Math.floor(value):
+            Math.ceil(value);
+        value /= 100;
+        return value;
+    }
+
+    function getProcessingFee(dollars) {
+        return truncateDollars((dollars * 0.029) + 0.30, false);
+    }
+
+    function getAmountAfterProcessing(dollars) {
+        return truncateDollars(dollars - getProcessingFee(dollars));
+    }
+
+    function getAmountBeforeProcessing(dollars) {
+        return truncateDollars((dollars + 0.30) / (1 - 0.029));
+    }
+</script>

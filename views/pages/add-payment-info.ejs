@@ -1,0 +1,55 @@
+<script src='https://js.stripe.com/v3/'></script>
+<link rel='stylesheet' href='/css/stripe.css'>
+
+<h1>Add Payment Info</h1>
+
+<p>
+    You can remove your payment information at anytime. Removing your payment info will remove your pledge from any campaigns you've pledged to but haven't been charged for.
+</p>
+
+<p class='error'></p>
+<p class='success'></p>
+
+<form action='/add-payment-info' method='POST'>
+    <div></div>
+    <button>Add Card</button>
+</form>
+
+<script>
+    const stripe = Stripe('<%= stripePublishableKey %>');
+    const client_secret = '<%= client_secret %>';
+
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount(`form > div`);
+
+    const successMessage = document.querySelector('.success');
+    const errorMessage = document.querySelector('.error');
+    
+    const cardButton = document.querySelector(`form > button`);
+    cardButton.addEventListener('click', event => {
+        errorMessage.innerText = successMessage.innerText = '';
+
+        stripe.confirmCardSetup(client_secret, {
+            payment_method: {
+                card: cardElement,
+            },
+        }).then(results => {
+            if(results.error) {
+                console.error(results);
+                successMessage.innerHTML = '';
+                errorMessage.innerText = results.error.message;
+            }
+            else {
+                errorMessage.innerText = '';
+                successMessage.innerText = 'success';
+                form.submit();
+            }
+        });
+    });
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+    });
+</script>

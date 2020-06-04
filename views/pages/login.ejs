@@ -1,0 +1,32 @@
+<h1>Login</h1>
+
+<p class='error'><%= messages.error %></p>
+
+<form action='/login' method='POST'>
+    <div>
+        <label for='username'>Username</label>
+        <input name='username' type='text' id='username' required value="<%= messages.username %>">
+    </div>
+
+    <div>
+        <label for='password'>Password</label>
+        <input name='password' type='password' required>
+    </div>
+
+    <button type='submit' disabled>Login</button>
+</form>
+
+<script>
+    const usernameInput = document.querySelector(`form input[name='username']`);
+    const passwordInput = document.querySelector(`form input[name='password']`);
+    
+    const submitButton = document.querySelector(`form button[type='submit']`);
+
+    const verify = () => {
+        submitButton.disabled = !((usernameInput.value.length) && passwordInput.value.length);
+    }
+
+    [usernameInput, passwordInput].forEach(input => {
+        input.addEventListener('input', verify);
+    });
+</script>

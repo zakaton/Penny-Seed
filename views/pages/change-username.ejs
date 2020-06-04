@@ -1,0 +1,85 @@
+<h1>Change Username</h1>
+
+<p class='error'><%= messages.error %></p>
+
+<form autocomplete='off' action='/change-username' method='POST'>
+    <div>
+        <label for='username'>Current Username</label>
+        <input name='username' type='text' readonly value="<%= user.username %>">
+    </div>
+
+    <div>
+        <label for='newUsername'>New Username</label>
+        <input name='newUsername' type='text' required>
+
+        <button type='button' id='checkAvailability' disabled>check availability</button>
+        <span class='success'></span>
+        <span class='error'></span>
+    </div>
+
+    <div>
+        <label for='password'>Password</label>
+        <input name='password' type='password' required>
+    </div>
+
+    <button type='submit' disabled>Change Password</button>
+</form>
+
+<script>
+    const currentUsername = '<%= user.username %>';
+
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    let isUsernameAvailable, areInputsNonempty
+
+    const updateSubmit = () => {
+        submitButton.disabled = !(isUsernameAvailable && areInputsNonempty);
+    }
+
+    const newUsernameInput = document.querySelector('input[name="newUsername"]');
+    const passwordInput = document.querySelector('input[name="password"]');
+    [newUsernameInput, passwordInput].forEach(input => {
+        input.addEventListener('input', event => {
+            areInputsNonempty = (newUsernameInput.value.length > 0) && (passwordInput.value.length > 0);
+            updateSubmit();
+        });
+    });
+
+    const checkAvailabilityButton = document.querySelector(`button#checkAvailability`);
+    newUsernameInput.addEventListener('input', event => {
+        successSpan.innerText = errorSpan.innerText = '';
+        if(event.target.value.toLowerCase() == currentUsername.toLowerCase()) {
+            isUsernameAvailable = true;
+            checkAvailabilityButton.disabled = true;
+        }
+        else {
+            isUsernameAvailable = false;
+            checkAvailabilityButton.disabled = false;
+        }
+
+        updateSubmit();
+    });
+
+    const successSpan = document.querySelector('span.success');
+    const errorSpan = document.querySelector('span.error');
+    checkAvailabilityButton.addEventListener('click', event => {
+        const username = newUsernameInput.value;
+        fetch('./username-available', {
+            method : 'POST',
+            body : JSON.stringify({username}),
+            headers : {"Content-Type": "application/json"}
+        }).then(response => response.json()).then(object => {
+            const {available} = object;
+
+            isUsernameAvailable = available;
+            updateSubmit();
+
+            successSpan.innerText = available?
+                `username is available!`:
+                ``;
+            errorSpan.innerText = available?
+                ``:
+                `username is not available`;
+        });
+    });
+</script>
