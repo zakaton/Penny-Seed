@@ -1,4 +1,4 @@
-<a href="https://webcomicname.com/" target="_blank">![Webcomic Name](images/oh-no.png)</a>
+<a href="https://webcomicname.com/" target="_blank">![Webcomic Name](https://cdn.glitch.com/44e08bf0-86d8-4d76-ad3c-f1d582821142%2Foh-no.png?v=1591285833517)</a>
 _Webcomic made by [Alex Norris](https://webcomicname.com/about) ([Website](https://webcomicname.com/), [Twitter](https://twitter.com/dorrismccomics), [Facebook](https://www.facebook.com/webcomicname/), [Instagram](https://www.instagram.com/webcomic_name/)) - Support him on [Patreon!](https://www.patreon.com/alexnorris)_
 
 # PennySeed

@@ -404,25 +404,25 @@ const evaluateCampaign = (campaign) => {
     if(campaign.pledgers.length >= campaign.minimumNumberOfPledgers) {
         db.get('campaigns').find({id: campaign.id}).set('successful', true).write();
 
-        const pledgeAmount = 100*stripeCalculator.getAmountBeforeProcessing(stripeCalculator.truncateDollars(campaign.goal/campaign.pledgers.length, false));
-        console.log(pledgeAmount);
+        const pledgeAmount = stripeCalculator.truncateDollars(campaign.goal/campaign.pledgers.length, true);
+        const fullPledgeAmount = stripeCalculator.getAmountBeforeProcessing(pledgeAmount);
+        console.log(pledgeAmount, fullPledgeAmount);
         const promises = campaign.pledgers.map(pledgerId => getUserById(pledgerId)).forEach(pledger => {
             return getCustomerById(pledger.id).then(customer => {
                 const paymentIntentPromise = stripe.paymentIntents.create({
-                    amount : Math.max(pledgeAmount, 50),
+                    amount : Math.floor(100*(fullPledgeAmount)),
                     currency: 'usd',
                     customer : pledger.stripe_customer_id,
                     confirm : true,
                     off_session: true,
-                    //application_fee_amount: 0,
+                    application_fee_amount: Math.floor(100*(stripeCalculator.truncateDollars(fullPledgeAmount - pledgeAmount, false))),
                     payment_method : customer.invoice_settings.default_payment_method,
                     on_behalf_of: campaigner.stripe_user_id,
                     transfer_data: {
                         destination: campaigner.stripe_user_id,
                     },
                 }).then(paymentIntent => {
-                    console.log(paymentIntent);
-                    // add 'ended' to campaign
+
                 }).catch(error => {
                     console.error(error);
                 });

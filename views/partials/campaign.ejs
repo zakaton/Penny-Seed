@@ -12,10 +12,10 @@
         <% if(campaign.campaigner !== user.id) { %>
             <% if(typeof userCustomer !== 'undefined' && userCustomer.invoice_settings.default_payment_method) { %>
                 <% if(campaign.ended) { %>
-
+                    <h3>Successful: <span data-campaign-successful><%= campaign.successful %></span></h3>
                 <% } else { %>
                     <% if(campaign.pledgers.includes(user.id)) { %>
-                        <h3>Pledge Amount if you unpledge: $<span data-campaign-unpledge-amount>0</span></h3>
+                        <h3>Pledge Amount for current pledgers if you unpledge: $<span data-campaign-unpledge-amount>0</span></h3>
                         <a href='/unpledge/<%= campaign.id %>'><button>Unpledge</button></a>
                     <% } else { %>
                         <h3>Pledge Amount if you pledge: $<span data-campaign-pledge-amount>0</span></h3>
