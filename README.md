@@ -1,8 +1,11 @@
 <a href="https://webcomicname.com/" target="_blank">![Webcomic Name](https://cdn.glitch.com/44e08bf0-86d8-4d76-ad3c-f1d582821142%2Foh-no.png?v=1591285833517)</a>
 _Webcomic made by [Alex Norris](https://webcomicname.com/about) ([Website](https://webcomicname.com/), [Twitter](https://twitter.com/dorrismccomics), [Facebook](https://www.facebook.com/webcomicname/), [Instagram](https://www.instagram.com/webcomic_name/)) - Support him on [Patreon!](https://www.patreon.com/alexnorris)_
 
-# PennySeed
-_Decentralized Income ([Demo](https://twitter.com/ConcreteSciFi/status/1174141943070085124))_
+# PennySeed - Decentralized Income
+
+### PennySeed is a crowdfunding platform where the funding goal is divided by the number of pledgers. For instance, if you ask for $1,000 and reach 500 pledgers, then each pays $2, and if 1,000 people pledge, then each pays only $1.  
+### Campaigns require a deadline and a minimum number of pledgers - that way people know the maximum possible pledge amount (campaign_goal / minimum_number_of_pledgers).  
+### Payments are done via Stripe, and pledge amounts include the Stripe processing fees (2.9% + $0.30) so the campaigner gets exactly how much they ask for.  
 
 ## 📚 Table of Contents
 [💰 Monetization Today](#-monetization-today)  
