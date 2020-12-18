@@ -73,7 +73,7 @@ _Webcomic made by [Alex Norris](https://webcomicname.com/about) ([Website](https
 
 ## 😔 Problems
 ❌ Arbitrary Pricing with no guarantee of a stable income  
-❌ Little incentive for suppters to encourage others to contribute  
+❌ Little incentive for supporters to encourage others to contribute  
 ❌ Creator has to do extra work for money (merchanidise, commissions, side jobs, etc)  
 
 ## 💡 Insight
